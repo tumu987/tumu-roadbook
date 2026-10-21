@@ -58,7 +58,7 @@ def main():
         resolved_out = os.path.join(RESOLVED_DIR, f"{base}.json")
 
     print("=" * 50)
-    print("阶段 1/2: 解析 YAML + 算路 + 校验")
+    print("阶段 1/3: 解析 YAML + 算路 + 校验")
     print("=" * 50)
     resolve_args = [sys.executable, os.path.join(BASE_DIR, 'resolve.py'), yaml_path]
     if resolved_out:
@@ -77,7 +77,7 @@ def main():
     # Step 2: Render
     print("")
     print("=" * 50)
-    print("阶段 2/2: 渲染 HTML")
+    print("阶段 2/3: 渲染 HTML")
     print("=" * 50)
     render_args = [sys.executable, os.path.join(BASE_DIR, 'render.py'), resolved_out]
     if output_path:
@@ -86,6 +86,15 @@ def main():
     r2 = subprocess.run(render_args)
     if r2.returncode != 0:
         print("\n❌ render.py 失败")
+        sys.exit(1)
+
+    print("")
+    print("=" * 50)
+    print("阶段 3/3: 重建路线册首页")
+    print("=" * 50)
+    r3 = subprocess.run([sys.executable, os.path.join(BASE_DIR, 'build_index.py')])
+    if r3.returncode != 0:
+        print("\n❌ build_index.py 失败")
         sys.exit(1)
 
     print("\n✅ 生成完成")

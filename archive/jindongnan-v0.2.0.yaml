@@ -1,11 +1,18 @@
-# 晋东南古建自驾 — 行程数据
+# [已归档] 晋东南古建自驾 — v0.2.0 旧行程数据
+# 当前维护版本：trips/southeast-shanxi-7d.yaml
 # 自动从 jindongnan-route-light.html v0.1.1 提取，添加路线起终点
 trip:
   title: 🏛️ 晋东南古建自驾路线图
   subtitle: 北京出发 · 浊漳河谷 · 长治 · 高平 · 晋城 · 七日古建巡礼
+  index:
+    order: 4
+    region: 山西 · 晋东南
+    color: '#b18445'
+    summary: 从长治与河谷延伸到高平、晋城，集中收录彩塑、壁画、宋金木构与古堡，是浊漳河谷路线的完整版。
   dates: 6月8日 — 6月14日
   basemap: light
   drivers: 2
+  coordinate_verification: strict
   stats:
     days: 7
     distance: "~2,200"
@@ -33,56 +40,89 @@ pois:
     lng: 113.623042
     rank: major
     iconAnchor: [0, -20]
+    coord_source: osm
+    osm_id: way/1252171732
+    verified_at: "2026-10-21"
   - name: 大云院
     lat: 36.367072
     lng: 113.438718
     rank: major
     iconAnchor: [0, 18]
+    coord_source: osm
+    osm_id: way/543740693
+    verified_at: "2026-10-21"
   - name: 天台庵
     lat: 36.383242
     lng: 113.398436
     rank: major
     iconAnchor: [-14, 0]
+    coord_source: osm
+    osm_id: node/5256332104
+    verified_at: "2026-10-21"
   - name: 观音堂
     lat: 36.227635
     lng: 113.076745
     rank: major
     iconAnchor: [0, -20]
+    coord_source: osm
+    osm_id: way/1157444902
+    verified_at: "2026-10-21"
   - name: 崇庆寺
-    lat: 35.98056
-    lng: 112.95972
+    lat: 35.980490
+    lng: 112.959819
     rank: major
     iconAnchor: [0, 18]
+    coord_source: osm
+    osm_id: node/5214344599
+    verified_at: "2026-10-21"
   - name: 法兴寺
-    lat: 36.09800
-    lng: 113.05600
+    lat: 35.984429
+    lng: 112.906852
     rank: major
     iconAnchor: [0, -18]
+    coord_source: osm
+    osm_id: way/1171912378
+    verified_at: "2026-10-21"
   - name: 开化寺
-    lat: 35.83800
-    lng: 112.91500
+    lat: 35.870328
+    lng: 113.037205
     rank: major
     iconAnchor: [0, -20]
+    coord_source: osm
+    osm_id: way/1084169346
+    verified_at: "2026-10-21"
   - name: 姬氏民居
-    lat: 35.86583
-    lng: 113.06333
+    lat: 35.866437
+    lng: 113.060327
     rank: major
     iconAnchor: [0, 18]
+    coord_source: osm
+    osm_id: way/1084169296
+    verified_at: "2026-10-21"
   - name: 玉皇庙星宿彩塑
-    lat: 35.48800
-    lng: 112.86000
+    lat: 35.546756
+    lng: 112.936879
     rank: major
     iconAnchor: [0, -20]
+    coord_source: osm
+    osm_id: way/1429242572
+    verified_at: "2026-10-21"
   - name: 青莲寺
-    lat: 35.45806
-    lng: 112.98917
+    lat: 35.458521
+    lng: 112.989445
     rank: major
     iconAnchor: [0, 18]
+    coord_source: osm
+    osm_id: way/1032432694
+    verified_at: "2026-10-21"
   - name: 湘峪古堡
-    lat: 35.67200
-    lng: 112.18200
+    lat: 35.567119
+    lng: 112.588297
     rank: major
     iconAnchor: [0, -20]
+    coord_source: osm
+    osm_id: node/14205485801
+    verified_at: "2026-10-21"
   - name: 淳化寺 · 金
     lat: 36.353256
     lng: 113.586226
@@ -199,7 +239,11 @@ days:
     route_class: spur
     route:
       start: [36.1910, 113.1160]
-      end: [36.1910, 113.1160]
+      via:
+        - [35.984429, 112.906852]
+        - [35.980490, 112.959819]
+      end: [36.1900, 113.1150]
+      terrain: national
     items:
       - '法兴寺 <span class="highlight">宋代十二圆觉彩塑</span>'
       - "崇庆寺 宋代罗汉像"
@@ -211,10 +255,10 @@ days:
       - "金灯寺石窟"
     pois:
       - name: 法兴寺
-        coord: [36.09800, 113.05600]
+        coord: [35.984429, 112.906852]
         rank: major
       - name: 崇庆寺
-        coord: [35.98056, 112.95972]
+        coord: [35.980490, 112.959819]
         rank: major
 
   - day: 5
@@ -226,6 +270,9 @@ days:
     route_class: main
     route:
       start: [36.1910, 113.1160]
+      via:
+        - [35.870328, 113.037205]
+        - [35.866437, 113.060327]
       end: [35.8000, 112.9300]
     items:
       - '开化寺 <span class="highlight">北宋壁画 88㎡</span>'
@@ -238,10 +285,10 @@ days:
       - "崇明寺"
     pois:
       - name: 开化寺
-        coord: [35.83800, 112.91500]
+        coord: [35.870328, 113.037205]
         rank: major
       - name: 姬氏民居
-        coord: [35.86583, 113.06333]
+        coord: [35.866437, 113.060327]
         rank: major
       - name: 崇明寺 · 北宋
         coord: [35.71444, 113.00861]
@@ -256,6 +303,9 @@ days:
     route_class: main
     route:
       start: [35.8000, 112.9300]
+      via:
+        - [35.546756, 112.936879]
+        - [35.458521, 112.989445]
       end: [35.5144, 112.5778]
     items:
       - '玉皇庙 <span class="highlight">⭐⭐ 二十八星宿彩塑</span>'
@@ -269,10 +319,10 @@ days:
       - "🕌 南大街清真美食"
     pois:
       - name: 玉皇庙星宿彩塑
-        coord: [35.48800, 112.86000]
+        coord: [35.546756, 112.936879]
         rank: major
       - name: 青莲寺
-        coord: [35.45806, 112.98917]
+        coord: [35.458521, 112.989445]
         rank: major
   - day: 7
     label: "6月14日（日）"
@@ -282,7 +332,7 @@ days:
     distance: "79→752km · 8.5h"
     route_class: main
     route:
-      start: [35.6720, 112.1820]
+      start: [35.567119, 112.588297]
       via: [[36.72, 114.03]]
       end: [39.9042, 116.4074]
       segments:
@@ -297,5 +347,5 @@ days:
       - "返程 🏠"
     pois:
       - name: 湘峪古堡
-        coord: [35.67200, 112.18200]
+        coord: [35.567119, 112.588297]
         rank: major

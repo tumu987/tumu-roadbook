@@ -1,6 +1,6 @@
 # Tumu Roadbook
 
-当前版本：`0.1.8`
+当前版本：`0.2.0`
 
 YAML 驱动的自驾路线图生成器。输入行程数据后，脚本会解析坐标、计算公路路线、执行基础行程校验，并输出可离线打开的交互式 HTML。
 
@@ -33,6 +33,12 @@ python render.py resolved/zhuozhang-4d.json
 
 默认产物写入 `output/`。`resolved/`、`output/` 和 `.cache/` 都是本地产物，不提交到 Git。
 
+`generate.py` 还会扫描 `trips/*.yaml` 并自动重建 `docs/index.html`。也可以单独执行：
+
+```bash
+python build_index.py
+```
+
 ## 行程数据
 
 行程文件位于 `trips/`。`trip.drivers` 表示主驾人数：
@@ -51,6 +57,12 @@ days:
 ```
 
 单主驾高速、山路每日上限分别为 400km、150km；双主驾为 700km、300km。超过上限时生成器会给出告警。
+
+### 数据结构校验
+
+行程 YAML 使用 `schema/trip.schema.json`（JSON Schema Draft 2020-12）校验字段类型、必填项、枚举、坐标范围和时间轴节点结构。文件顶部的 `yaml-language-server` 声明可为支持 YAML Language Server 的编辑器提供补全和即时错误提示。
+
+Schema 负责结构校验；地名解析、OSM 对象核验、重复检查、路线计算和行程风险仍由 Python 语义校验处理。
 
 ### 景点坐标严格核验
 
@@ -92,6 +104,10 @@ timeline:
 
 `time` 用于出发、闭馆、日落等必要锚点；`duration` 用于车程、游览、用餐和休息。游览节点会显示为“预计30分钟”，其他弹性节点显示为“约1小时”。
 
+### 风险与强度
+
+每日卡片会在时间轴内展示里程、海拔、迎光驾驶和路线近似等风险，并根据时间轴计算计划总耗时，标记为“轻松、正常、偏紧、不建议”。如果 OSRM 无法返回真实道路，地图路线会改为虚线并显示近似路线警告。
+
 ## 目录
 
 ```text
@@ -99,6 +115,7 @@ trips/       行程 YAML
 archive/     已停用的历史行程备份
 templates/   HTML、CSS、JavaScript 模板
 docs/        已生成的发布页面
+build_index.py  从行程 YAML 汇总生成路线册首页
 resolved/    本地解析缓存（忽略提交）
 output/      本地 HTML 产物（忽略提交）
 ```

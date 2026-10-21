@@ -1,0 +1,583 @@
+# yaml-language-server: $schema=../schema/trip.schema.json
+# 北疆十四日自驾环线 — 新版本行程
+trip:
+  title: 🏔️ 北疆十四日环线
+  subtitle: 乌鲁木齐出发 · 可可托海 · 喀纳斯 · 赛里木湖 · 伊犁 · 独库公路
+  index:
+    order: 3
+    region: 新疆 · 北疆环线
+    color: '#5678aa'
+    summary: 先北上可可托海与喀纳斯，再转赛里木湖和伊犁草原，最后沿独库公路返回乌鲁木齐。
+  dates: 建议 6 月下旬至 9 月下旬
+  basemap: light
+  drivers: 2
+  coordinate_verification: strict
+  timeline_mode: merged
+  stats:
+    days: 14
+    distance: "3,200"
+    heritage: "12"
+    people: 2
+
+cities:
+  乌鲁木齐: [43.824407, 87.613904]
+  富蕴: [46.992962, 89.522734]
+  独山子: [44.327823, 84.884397]
+  布尔津: [47.700617, 86.872219]
+  喀纳斯: [48.691293, 87.030019]
+  禾木: [48.569206, 87.430372]
+  克拉玛依: [45.577807, 84.886725]
+  赛里木湖: [44.608256, 81.180576]
+  伊宁: [43.905203, 81.274780]
+  特克斯: [43.216904, 81.833002]
+  那拉提: [43.326803, 84.000955]
+
+pois:
+  - name: 额尔齐斯大峡谷
+    lat: 47.215735
+    lng: 89.868708
+    rank: major
+    coord_source: osm
+    osm_id: node/11897099964
+    verified_at: "2026-10-21"
+  - name: 五彩滩
+    lat: 47.839136
+    lng: 86.671730
+    rank: major
+    coord_source: osm
+    osm_id: node/11897132262
+    verified_at: "2026-10-21"
+  - name: 喀纳斯湖
+    lat: 48.799514
+    lng: 87.027294
+    rank: major
+    coord_source: osm
+    osm_id: relation/1164854
+    verified_at: "2026-10-21"
+  - name: 观鱼台
+    lat: 48.725782
+    lng: 86.990507
+    rank: major
+    coord_source: osm
+    osm_id: node/2970777553
+    verified_at: "2026-10-21"
+  - name: 禾木村
+    lat: 48.569206
+    lng: 87.430372
+    rank: major
+    coord_source: osm
+    osm_id: node/6118572418
+    verified_at: "2026-10-21"
+  - name: 世界魔鬼城
+    lat: 46.114405
+    lng: 85.760961
+    rank: major
+    coord_source: osm
+    osm_id: way/1262110121
+    verified_at: "2026-10-21"
+  - name: 赛里木湖
+    lat: 44.608256
+    lng: 81.180576
+    rank: major
+    coord_source: osm
+    osm_id: relation/35887
+    verified_at: "2026-10-21"
+  - name: 果子沟大桥
+    lat: 44.470320
+    lng: 81.140324
+    rank: major
+    coord_source: osm
+    osm_id: way/204591674
+    verified_at: "2026-10-21"
+  - name: 白石峰观景台
+    lat: 43.424991
+    lng: 81.058207
+    rank: major
+    coord_source: osm
+    osm_id: node/11749622957
+    verified_at: "2026-10-21"
+  - name: 喀拉峻东门游客中心
+    lat: 43.091590
+    lng: 82.135121
+    rank: major
+    coord_source: osm
+    osm_id: node/12925322201
+    verified_at: "2026-10-21"
+  - name: 独库公路纪念碑
+    lat: 43.650012
+    lng: 84.356867
+    rank: major
+    coord_source: osm
+    osm_id: node/8787856938
+    verified_at: "2026-10-21"
+  - name: 独山子大峡谷
+    lat: 44.157290
+    lng: 84.755621
+    rank: major
+    coord_source: osm
+    osm_id: way/1263802733
+    verified_at: "2026-10-21"
+
+days:
+  - day: 1
+    label: "D1"
+    day_type: local
+    city: 乌鲁木齐
+    theme: "乌鲁木齐 · 抵达与整备"
+    route_class: spur
+    route:
+      start: 乌鲁木齐
+      end: 乌鲁木齐
+    stop_tags:
+      - "🏨 乌鲁木齐"
+      - "🚗 提车整备"
+    tips:
+      - "🪪 提前确认租车保险、限行与异地还车规则"
+      - "🧴 采购防晒、饮水、零食和常用药品"
+      - "📱 下载新疆离线地图，保存住宿与救援电话"
+    timeline:
+      - time: "全天"
+        action: "抵达乌鲁木齐，机场取车并入住"
+        kind: fixed
+      - duration: "2小时"
+        action: "车辆检查、补给采购和次日路线确认"
+        kind: rest
+      - duration: "1小时"
+        action: "市区晚餐，尽量早休息"
+        kind: meal
+
+  - day: 2
+    label: "D2"
+    day_type: transit
+    city: 富蕴
+    theme: "乌鲁木齐 → 富蕴"
+    route_class: main
+    route:
+      start: 乌鲁木齐
+      end: 富蕴
+    stop_tags:
+      - "🛣️ 长途转移"
+      - "🏨 富蕴"
+    tips:
+      - "🚗 当日路程较长，建议 08:00 前出发并双驾轮换"
+      - "⛽ 服务区分布不均，见油站及时补满"
+      - "🌬️ 穿越戈壁路段注意侧风与疲劳驾驶"
+    timeline:
+      - time: "08:00"
+        action: "乌鲁木齐出发，北上阿勒泰方向"
+        kind: fixed
+      - duration: "3小时"
+        action: "高速北行，服务区休息与换驾"
+        kind: drive
+      - duration: "1小时"
+        action: "午餐与车辆补给"
+        kind: meal
+      - duration: "3小时"
+        action: "继续前往富蕴县城"
+        kind: drive
+      - time: "傍晚"
+        action: "抵达富蕴，入住并准备次日可可托海行程"
+        kind: anchor
+
+  - day: 3
+    label: "D3"
+    day_type: transit
+    city: 富蕴
+    theme: "富蕴 → 可可托海 · 额尔齐斯大峡谷"
+    route_class: main
+    route:
+      start: [46.9930, 89.5227]
+      via:
+        - 额尔齐斯大峡谷
+      end: [46.9920, 89.5235]
+    stop_tags:
+      - "额尔齐斯大峡谷"
+      - "🏨 富蕴"
+    tips:
+      - "🎫 景区区间车和步行时间较久，预留半天以上"
+      - "🧥 峡谷早晚温差明显，随身带防风外套"
+      - "📸 神钟山与河谷光线变化快，先远观再徒步"
+    timeline:
+      - time: "08:00"
+        action: "从富蕴出发前往可可托海"
+        kind: fixed
+      - duration: "1小时30分钟"
+        action: "富蕴 → 可可托海景区"
+        kind: drive
+      - duration: "4小时"
+        action: "额尔齐斯大峡谷、神钟山与河谷徒步"
+        kind: visit
+      - duration: "1小时"
+        action: "午餐与休整"
+        kind: meal
+      - duration: "1小时30分钟"
+        action: "返回富蕴县城"
+        kind: drive
+
+  - day: 4
+    label: "D4"
+    day_type: transit
+    city: 布尔津
+    theme: "富蕴 → 五彩滩 → 布尔津"
+    route_class: main
+    route:
+      start: 富蕴
+      via:
+        - 五彩滩
+      end: 布尔津
+    stop_tags:
+      - "五彩滩"
+      - "🏨 布尔津"
+    tips:
+      - "🌅 五彩滩日落是当天核心，下午控制好到达时间"
+      - "🧥 河岸风大，傍晚加一件外套"
+      - "🐟 布尔津河堤夜市可作为晚餐选择"
+    timeline:
+      - time: "09:00"
+        action: "富蕴出发，前往布尔津"
+        kind: fixed
+      - duration: "3小时"
+        action: "沿阿勒泰方向行驶，途中休息与换驾"
+        kind: drive
+      - duration: "1小时30分钟"
+        action: "抵达布尔津，办理入住与午餐"
+        kind: meal
+      - duration: "2小时"
+        action: "酒店休整，避开正午强光"
+        kind: rest
+      - duration: "2小时"
+        action: "五彩滩观景与日落拍摄"
+        kind: visit
+      - duration: "30分钟"
+        action: "返回布尔津县城"
+        kind: drive
+
+  - day: 5
+    label: "D5"
+    day_type: transit
+    city: 喀纳斯
+    theme: "布尔津 → 喀纳斯"
+    route_class: main
+    route:
+      start: 布尔津
+      end: 喀纳斯
+      terrain: mountain
+    stop_tags:
+      - "喀纳斯湖"
+      - "🏨 喀纳斯"
+    tips:
+      - "🎫 旺季门票与区间车需提前预约"
+      - "🧳 大件行李留车里，只带一晚随身包进入景区"
+      - "🌡️ 山区温度明显低于布尔津，备抓绒或薄羽绒"
+    timeline:
+      - time: "08:30"
+        action: "布尔津出发，沿阿尔泰山北上"
+        kind: fixed
+      - duration: "3小时"
+        action: "山路前往喀纳斯，途中按体力安排休息"
+        kind: drive
+      - duration: "1小时"
+        action: "换乘区间车、入住与简单午餐"
+        kind: meal
+      - duration: "2小时30分钟"
+        action: "喀纳斯湖栈道慢走，适应海拔与天气"
+        kind: visit
+
+  - day: 6
+    label: "D6"
+    day_type: local
+    city: 喀纳斯
+    theme: "喀纳斯 · 观鱼台与三湾"
+    route_class: spur
+    route:
+      start: 喀纳斯
+      end: 喀纳斯
+    stop_tags:
+      - "观鱼台"
+      - "喀纳斯湖"
+      - "🏨 喀纳斯"
+    tips:
+      - "🌄 上午登观鱼台，光线与体力状态更合适"
+      - "🥾 三湾徒步可只走月亮湾至卧龙湾精华段"
+      - "🌧️ 山区天气变化快，雨具随身携带"
+    timeline:
+      - duration: "1小时"
+        action: "乘区间车前往观鱼台入口"
+        kind: drive
+      - duration: "2小时30分钟"
+        action: "登观鱼台，俯瞰喀纳斯湖"
+        kind: visit
+      - duration: "1小时"
+        action: "午餐与休息"
+        kind: meal
+      - duration: "3小时"
+        action: "神仙湾、月亮湾与卧龙湾分段游览"
+        kind: visit
+
+  - day: 7
+    label: "D7"
+    day_type: transit
+    city: 禾木
+    theme: "喀纳斯 → 禾木"
+    route_class: main
+    route:
+      start: 喀纳斯
+      end: 禾木
+      terrain: mountain
+    stop_tags:
+      - "禾木村"
+      - "🏨 禾木"
+    tips:
+      - "🏡 禾木住宿提前确认热水、供暖和车辆停放"
+      - "🌌 村内光污染低，天气晴朗时可安排星空拍摄"
+      - "🧥 日落后降温快，不要只穿单层衣物"
+    timeline:
+      - time: "10:00"
+        action: "喀纳斯退房，沿山道前往禾木"
+        kind: fixed
+      - duration: "2小时30分钟"
+        action: "车程与区间换乘，途中休息"
+        kind: drive
+      - duration: "1小时"
+        action: "入住木屋、午餐与整理装备"
+        kind: meal
+      - duration: "3小时"
+        action: "禾木村自由漫步与河谷拍摄"
+        kind: visit
+
+  - day: 8
+    label: "D8"
+    day_type: transit
+    city: 克拉玛依
+    theme: "禾木 → 克拉玛依"
+    route_class: main
+    route:
+      start: 禾木
+      via:
+        - 布尔津
+      end: 克拉玛依
+    stop_tags:
+      - "🛣️ 长途转移"
+      - "🏨 克拉玛依"
+    tips:
+      - "🚗 当天以赶路为主，不安排需要长时间步行的景点"
+      - "⛽ 离开布尔津前加满油，穿越戈壁前检查胎压"
+      - "☀️ 午后西行注意迎光，备偏光镜"
+    timeline:
+      - time: "08:00"
+        action: "禾木出发，下山返回布尔津"
+        kind: fixed
+      - duration: "3小时"
+        action: "禾木 → 布尔津，途中服务区休息"
+        kind: drive
+      - duration: "1小时"
+        action: "布尔津午餐与补给"
+        kind: meal
+      - duration: "4小时"
+        action: "沿戈壁公路前往克拉玛依，双驾轮换"
+        kind: drive
+      - time: "傍晚"
+        action: "抵达克拉玛依入住，轻松晚餐"
+        kind: anchor
+
+  - day: 9
+    label: "D9"
+    day_type: transit
+    city: 赛里木湖
+    theme: "克拉玛依 → 赛里木湖"
+    route_class: main
+    route:
+      start: 克拉玛依
+      end: 赛里木湖
+    stop_tags:
+      - "赛里木湖"
+      - "🏨 赛里木湖"
+    tips:
+      - "🏔️ 当晚海拔约 2000m，避免剧烈运动和饮酒"
+      - "🧥 湖区昼夜温差大，准备保暖层"
+      - "🌅 若体力允许，再安排日落；不要为了拍照疲劳驾驶"
+    timeline:
+      - time: "08:30"
+        action: "克拉玛依出发，沿高速西行"
+        kind: fixed
+      - duration: "3小时"
+        action: "高速行驶，服务区休息与换驾"
+        kind: drive
+      - duration: "1小时"
+        action: "午餐与补给"
+        kind: meal
+      - duration: "1小时30分钟"
+        action: "继续前往赛里木湖"
+        kind: drive
+      - duration: "2小时"
+        action: "东门进入湖区，沿湖慢行与日落拍摄"
+        kind: visit
+
+  - day: 10
+    label: "D10"
+    day_type: transit
+    city: 伊宁
+    theme: "赛里木湖 → 果子沟 → 伊宁"
+    route_class: main
+    route:
+      start: 赛里木湖
+      via:
+        - 果子沟大桥
+      end: 伊宁
+    stop_tags:
+      - "果子沟大桥"
+      - "🏨 伊宁"
+    tips:
+      - "🌉 果子沟大桥需在正规观景区域停车，不要路边随意停留"
+      - "🏙️ 到伊宁后可安排喀赞其街区轻松散步"
+      - "🌇 伊宁日落较晚，晚餐不必安排过早"
+    timeline:
+      - time: "09:30"
+        action: "赛里木湖出发，南门方向离开湖区"
+        kind: fixed
+      - duration: "2小时"
+        action: "经果子沟下山，在观景台停留"
+        kind: drive
+      - duration: "1小时30分钟"
+        action: "前往伊宁并办理入住"
+        kind: drive
+      - duration: "2小时"
+        action: "喀赞其街区漫步与晚餐"
+        kind: visit
+
+  - day: 11
+    label: "D11"
+    day_type: transit
+    city: 特克斯
+    theme: "伊宁 → 伊昭公路 → 特克斯"
+    route_class: main
+    route:
+      start: 伊宁
+      via:
+        - 白石峰观景台
+      end: 特克斯
+      terrain: mountain
+    stop_tags:
+      - "白石峰观景台"
+      - "🏨 特克斯"
+    tips:
+      - "🛣️ 伊昭公路弯道多，雨天与夜间不建议赶路"
+      - "🪪 出发前确认道路开放及天气情况"
+      - "🌄 白石峰只在天气通透时停留，避免长时间等待"
+    timeline:
+      - time: "09:00"
+        action: "伊宁出发，进入伊昭公路"
+        kind: fixed
+      - duration: "2小时"
+        action: "山路爬升，途中按弯道与观景点休息"
+        kind: drive
+      - duration: "1小时"
+        action: "白石峰观景与短途步行"
+        kind: visit
+      - duration: "2小时"
+        action: "下山前往特克斯，办理入住"
+        kind: drive
+      - duration: "2小时"
+        action: "八卦城轻松散步与晚餐"
+        kind: visit
+
+  - day: 12
+    label: "D12"
+    day_type: local
+    city: 特克斯
+    theme: "特克斯 · 喀拉峻全天"
+    route_class: spur
+    route:
+      start: [43.2170, 81.8330]
+      via:
+        - 喀拉峻东门游客中心
+      end: [43.2168, 81.8332]
+      terrain: mountain
+    stop_tags:
+      - "喀拉峻东门游客中心"
+      - "🏨 特克斯"
+    tips:
+      - "🎫 喀拉峻景区范围大，提前确认区间车末班时间"
+      - "🥾 草原步行注意防晒，不要远离步道"
+      - "🏨 当晚不用换酒店，游玩节奏可以更从容"
+    timeline:
+      - time: "08:30"
+        action: "特克斯出发，前往喀拉峻东门"
+        kind: fixed
+      - duration: "1小时"
+        action: "抵达换乘中心并进入景区"
+        kind: drive
+      - duration: "4小时"
+        action: "喀拉峻草原与观景平台游览"
+        kind: visit
+      - duration: "1小时"
+        action: "离开景区，午餐与休整"
+        kind: meal
+      - duration: "1小时"
+        action: "返回特克斯县城，休息与晚餐"
+        kind: drive
+
+  - day: 13
+    label: "D13"
+    day_type: transit
+    city: 那拉提
+    theme: "特克斯 → 那拉提"
+    route_class: main
+    route:
+      start: 特克斯
+      end: 那拉提
+    stop_tags:
+      - "🏨 那拉提"
+    tips:
+      - "🌿 那拉提只选一条游览线，避免一天塞满"
+      - "🏔️ 那拉提海拔约 1400m，通常不需要额外适应"
+      - "🦟 草原蚊虫较多，备驱蚊用品"
+    timeline:
+      - time: "09:00"
+        action: "特克斯出发，前往那拉提"
+        kind: fixed
+      - duration: "4小时"
+        action: "沿河谷公路东行，途中休息与换驾"
+        kind: drive
+      - duration: "1小时"
+        action: "入住与午餐"
+        kind: meal
+      - duration: "3小时"
+        action: "那拉提草原游览，按体力选择步行路线"
+        kind: visit
+
+  - day: 14
+    label: "D14"
+    day_type: transit
+    city: 乌鲁木齐
+    theme: "那拉提 → 独库公路 → 乌鲁木齐"
+    route_class: main
+    route:
+      start: 那拉提
+      via:
+        - 独库公路纪念碑
+      end: 乌鲁木齐
+      terrain: mountain
+    stop_tags:
+      - "独库公路纪念碑"
+      - "🏠 返程乌鲁木齐"
+    tips:
+      - "⚠️ 出发前确认独库公路放行和天气，封路时改走 G218"
+      - "⛽ 乔尔玛加满油，山区不要依赖临时油站"
+      - "✈️ 当晚返程请预留 4 小时以上到机场，避免堵车风险"
+    timeline:
+      - time: "07:30"
+        action: "那拉提退房出发，北行独库公路"
+        kind: fixed
+      - duration: "3小时"
+        action: "山区行驶，途中观景与休息"
+        kind: drive
+      - duration: "30分钟"
+        action: "独库公路纪念碑停留"
+        kind: visit
+      - duration: "4小时30分钟"
+        action: "继续返回乌鲁木齐，双驾轮换"
+        kind: drive
+      - time: "傍晚"
+        action: "抵达乌鲁木齐，还车并返程"
+        kind: anchor

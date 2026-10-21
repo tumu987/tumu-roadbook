@@ -85,6 +85,7 @@ def render(resolved_path: str, output_path: str | None = None):
     stop_css = data.get('stop_css', '')
     tile_url = data.get('tile_url', '')
     center = data.get('center', {"lat": 36.0, "lng": 113.5})
+    poi_zoom = data.get('poi_zoom', {"major": 10, "minor": 11})
     main_routes = routes_data.get('main', [])
     spur_routes = routes_data.get('spur', [])
     major_spots = pois.get('major', [])
@@ -105,9 +106,15 @@ def render(resolved_path: str, output_path: str | None = None):
         route_js_parts.append(f'var sr_{idx+1} = {pts_str};')
     
     # mainRoutes / spurRoutes arrays
-    main_routes_js = 'var mainRoutes = [\n' + '\n'.join(f"  ['{r['color']}', r_{i+1}]," for i, r in enumerate(main_routes)) + '\n];'
+    main_routes_js = 'var mainRoutes = [\n' + '\n'.join(
+        f"  ['{r['color']}', r_{i+1}, '{r.get('quality', 'road')}'],"
+        for i, r in enumerate(main_routes)
+    ) + '\n];'
     if spur_routes:
-        spur_routes_js = 'var spurRoutes = [\n' + '\n'.join(f"  ['{r['color']}', sr_{i+1}]," for i, r in enumerate(spur_routes)) + '\n];'
+        spur_routes_js = 'var spurRoutes = [\n' + '\n'.join(
+            f"  ['{r['color']}', sr_{i+1}, '{r.get('quality', 'road')}'],"
+            for i, r in enumerate(spur_routes)
+        ) + '\n];'
     else:
         spur_routes_js = 'var spurRoutes = [];'
     
@@ -134,6 +141,7 @@ def render(resolved_path: str, output_path: str | None = None):
     map_js = map_js.replace('{{CENTER_LNG}}', str(center['lng']))
     map_js = map_js.replace('{{TILE_URL}}', tile_url)
     map_js = map_js.replace('{{FOCUS_JSON}}', json.dumps(focus, ensure_ascii=False))
+    map_js = map_js.replace('{{POI_ZOOM_JSON}}', json.dumps(poi_zoom, ensure_ascii=False))
     
     html = html_template
     html = html.replace('{{TITLE}}', title)

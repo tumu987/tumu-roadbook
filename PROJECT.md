@@ -166,10 +166,14 @@ tumu-roadbook/
 ├── README.md                # 安装与使用说明
 ├── requirements.txt         # Python 依赖
 ├── generate.py              # 主生成脚本
+├── build_index.py           # 扫描 trips/ 自动生成路线册首页
 ├── templates/
 │   ├── map.html             # 页面结构
 │   ├── map.css              # 页面样式
-│   └── map.js               # 地图与标签逻辑
+│   ├── map.js               # 地图与标签逻辑
+│   └── index.html           # 路线册首页模板
+├── schema/
+│   └── trip.schema.json     # JSON Schema 结构校验
 ├── trips/
 │   ├── jindongnan.yaml      # 晋东南数据
 │   └── ...                   # 未来行程

@@ -40,7 +40,13 @@ function mw(txt, s) {
 
 // ── 路线（主路线 + 支线 + 端线段数据）──
 for (var i = 0; i < mainRoutes.length; i++)
-  L.polyline(mainRoutes[i][1], { color: mainRoutes[i][0], weight: 4, opacity: 0.85, smoothFactor: 1 }).addTo(map);
+  L.polyline(mainRoutes[i][1], {
+    color: mainRoutes[i][0],
+    weight: 4,
+    opacity: mainRoutes[i][2] === 'estimated' ? 0.65 : 0.85,
+    dashArray: mainRoutes[i][2] === 'estimated' ? '8,6' : null,
+    smoothFactor: 1
+  }).addTo(map);
 var spurLayer = L.layerGroup();
 
 // 预采样路线线段（每 5 个点取一段），用于像素碰撞
@@ -236,6 +242,7 @@ spots.forEach(function(s){ab.extend([s[0],s[1]]);});
 map.fitBounds(ab,{padding:[50,50]});
 var overviewBounds = map.getBounds();
 var focusCfg = {{FOCUS_JSON}};
+var poiZoom = {{POI_ZOOM_JSON}};
 var focusActive = false;
 var focusBtn = document.getElementById('focus-btn');
 if (focusCfg && focusCfg.center && focusCfg.zoom) {
@@ -315,12 +322,21 @@ function u() {
   spurLayer.clearLayers();
   if (z>=10) {
     for (var i=0;i<spurRoutes.length;i++)
-      spurLayer.addLayer(L.polyline(spurRoutes[i][1],{color:spurRoutes[i][0],weight:3,opacity:0.6,smoothFactor:1}));
+      spurLayer.addLayer(L.polyline(spurRoutes[i][1],{
+        color: spurRoutes[i][0],
+        weight: 3,
+        opacity: spurRoutes[i][2] === 'estimated' ? 0.5 : 0.6,
+        dashArray: spurRoutes[i][2] === 'estimated' ? '7,5' : null,
+        smoothFactor: 1
+      }));
   }
-  if (z>=10&&!map.hasLayer(poiMajor)) map.addLayer(poiMajor);
-  else if (z<10&&map.hasLayer(poiMajor)) map.removeLayer(poiMajor);
-  if (z>=11&&!map.hasLayer(poiMinor)) map.addLayer(poiMinor);
-  else if (z<11&&map.hasLayer(poiMinor)) map.removeLayer(poiMinor);
+  var compactAdjust = map.getSize().x < 420 ? 1 : 0;
+  var majorMinZoom = poiZoom.major + compactAdjust;
+  var minorMinZoom = poiZoom.minor + compactAdjust;
+  if (z>=majorMinZoom&&!map.hasLayer(poiMajor)) map.addLayer(poiMajor);
+  else if (z<majorMinZoom&&map.hasLayer(poiMajor)) map.removeLayer(poiMajor);
+  if (z>=minorMinZoom&&!map.hasLayer(poiMinor)) map.addLayer(poiMinor);
+  else if (z<minorMinZoom&&map.hasLayer(poiMinor)) map.removeLayer(poiMinor);
   if (!map.hasLayer(spurLayer)) map.addLayer(spurLayer);
   
   if (map.hasLayer(dotLayer)){map.removeLayer(dotLayer);map.addLayer(dotLayer);}

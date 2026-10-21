@@ -1,7 +1,13 @@
+# yaml-language-server: $schema=../schema/trip.schema.json
 # 北京往返 · 浊漳河谷四天三宿古建自驾
 trip:
   title: 🏛️ 浊漳河谷 · 四天三宿
   subtitle: 北京往返 · 天台庵 · 原起寺 · 龙门寺 · 大云院 · 长治观音堂
+  index:
+    order: 1
+    region: 山西 · 浊漳河谷
+    color: '#c96b55'
+    summary: 北京往返，两晚平顺。以天台庵、原起寺、龙门寺和大云院为骨架，把五代木构与河谷村落串成一个闭环。
   dates: 四天三宿
   basemap: light
   drivers: 2

@@ -1,0 +1,430 @@
+# yaml-language-server: $schema=../schema/trip.schema.json
+# 晋东南上党古建七日环线 — 新版行程
+trip:
+  title: 🏛️ 晋东南上党古建
+  subtitle: 北京往返 · 长治 · 长子 · 高平 · 晋城 · 浊漳河谷
+  index:
+    order: 4
+    region: 山西 · 晋东南
+    color: '#b18445'
+    summary: 从长治与长子南下高平、晋城，最后进入浊漳河谷，以宋金木构、彩塑和古堡组成七日上党巡礼。
+  dates: 建议春季或秋季
+  basemap: light
+  drivers: 2
+  coordinate_verification: strict
+  timeline_mode: merged
+  stats:
+    days: 7
+    distance: "1,730"
+    heritage: "14+"
+    people: 2
+
+cities:
+  北京: [39.9042, 116.4074]
+  长治: [36.1910, 113.1160]
+  高平: [35.8000, 112.9300]
+  晋城: [35.491313, 112.845450]
+  平顺: [36.2000, 113.4390]
+
+pois:
+  - name: 长治观音堂
+    lat: 36.227635
+    lng: 113.076745
+    rank: major
+    coord_source: osm
+    osm_id: way/1157444902
+    verified_at: "2026-10-21"
+  - name: 上党门
+    lat: 36.187171
+    lng: 113.100345
+    rank: major
+    coord_source: osm
+    osm_id: way/1171947665
+    verified_at: "2026-10-21"
+  - name: 法兴寺
+    lat: 35.984429
+    lng: 112.906852
+    rank: major
+    coord_source: osm
+    osm_id: way/1171912378
+    verified_at: "2026-10-21"
+  - name: 崇庆寺
+    lat: 35.980490
+    lng: 112.959819
+    rank: major
+    coord_source: osm
+    osm_id: node/5214344599
+    verified_at: "2026-10-21"
+  - name: 开化寺
+    lat: 35.870328
+    lng: 113.037205
+    rank: major
+    coord_source: osm
+    osm_id: way/1084169346
+    verified_at: "2026-10-21"
+  - name: 姬氏民居
+    lat: 35.866437
+    lng: 113.060327
+    rank: major
+    coord_source: osm
+    osm_id: way/1084169296
+    verified_at: "2026-10-21"
+  - name: 崇明寺
+    lat: 35.714485
+    lng: 113.008700
+    rank: major
+    coord_source: osm
+    osm_id: way/1032446705
+    verified_at: "2026-10-21"
+  - name: 府城玉皇庙
+    lat: 35.546756
+    lng: 112.936879
+    rank: major
+    coord_source: osm
+    osm_id: way/1429242572
+    verified_at: "2026-10-21"
+  - name: 青莲寺
+    lat: 35.458521
+    lng: 112.989445
+    rank: major
+    coord_source: osm
+    osm_id: way/1032432694
+    verified_at: "2026-10-21"
+  - name: 天台庵
+    lat: 36.383242
+    lng: 113.398436
+    rank: major
+    coord_source: osm
+    osm_id: node/5256332104
+    verified_at: "2026-10-21"
+  - name: 原起寺
+    lat: 36.353334
+    lng: 113.425748
+    rank: major
+    coord_source: osm
+    osm_id: node/5256251859
+    verified_at: "2026-10-21"
+  - name: 淳化寺
+    lat: 36.353256
+    lng: 113.586226
+    rank: major
+    coord_source: osm
+    osm_id: way/1449573449
+    verified_at: "2026-10-21"
+  - name: 龙门寺
+    lat: 36.390227
+    lng: 113.623042
+    rank: major
+    coord_source: osm
+    osm_id: way/1252171732
+    verified_at: "2026-10-21"
+  - name: 大云院
+    lat: 36.367072
+    lng: 113.438718
+    rank: major
+    coord_source: osm
+    osm_id: way/543740693
+    verified_at: "2026-10-21"
+
+days:
+  - day: 1
+    label: "D1"
+    day_type: transit
+    city: 长治
+    theme: "北京 → 邯郸 → 长治"
+    route_class: main
+    route:
+      start: 北京
+      via:
+        - [36.6256, 114.5391]
+      end: 长治
+      terrain: highway
+    stop_tags:
+      - "🏨 长治"
+      - "🛣️ 进晋"
+    tips:
+      - "🚗 首日以赶路为主，建议双驾并在邯郸附近补给"
+      - "📱 提前下载长治与太行山区离线地图"
+      - "⛽ 进入山西前加满油，避免晚高峰进城"
+    timeline:
+      - time: "06:30"
+        action: "从住处出发，经京港澳高速南下"
+        kind: fixed
+      - duration: "4小时"
+        action: "高速行驶，服务区按体力休息与换驾"
+        kind: drive
+      - duration: "1小时"
+        action: "午餐与补给"
+        kind: meal
+      - duration: "3小时"
+        action: "转长治方向，继续行驶"
+        kind: drive
+      - time: "下午"
+        action: "抵达长治，办理入住并休息"
+        kind: anchor
+
+  - day: 2
+    label: "D2"
+    day_type: local
+    city: 长治
+    theme: "长治市区 · 明代悬塑"
+    route_class: spur
+    route:
+      start: [36.2000, 113.1160]
+      via:
+        - 长治观音堂
+        - 上党门
+      end: [36.1900, 113.1150]
+      terrain: national
+    stop_tags:
+      - "长治观音堂"
+      - "上党门"
+      - "🏨 长治"
+    tips:
+      - "🕘 观音堂可能午间闭门，先参观再午餐"
+      - "🔦 殿内光线较暗，使用手电并关闭闪光灯"
+      - "🏙️ 上党门安排在傍晚，老城步行更舒服"
+    timeline:
+      - time: "09:00"
+        action: "从酒店出发前往观音堂"
+        kind: fixed
+      - duration: "1小时"
+        action: "长治观音堂：明代悬塑"
+        kind: visit
+      - duration: "15分钟"
+        action: "前往老城午餐区域"
+        kind: drive
+      - duration: "1小时"
+        action: "午餐与休息"
+        kind: meal
+      - duration: "45分钟"
+        action: "上党门与老城街巷散步"
+        kind: visit
+      - duration: "15分钟"
+        action: "返回酒店，预留下午休整"
+        kind: drive
+
+  - day: 3
+    label: "D3"
+    day_type: transit
+    city: 高平
+    theme: "长治 → 长子 → 高平"
+    route_class: main
+    route:
+      start: 长治
+      via:
+        - 法兴寺
+        - 崇庆寺
+      end: 高平
+      terrain: national
+    stop_tags:
+      - "法兴寺"
+      - "崇庆寺"
+      - "🏨 高平"
+    tips:
+      - "💰 准备零钱或联系文保员，部分古建并非全天开放"
+      - "📞 出发前确认法兴寺与崇庆寺的午休时间"
+      - "📸 彩塑殿内禁止闪光灯"
+    timeline:
+      - time: "08:30"
+        action: "长治退房，前往长子方向"
+        kind: fixed
+      - duration: "1小时30分钟"
+        action: "抵达法兴寺，参观宋代彩塑"
+        kind: visit
+      - duration: "20分钟"
+        action: "法兴寺 → 崇庆寺"
+        kind: drive
+      - duration: "1小时"
+        action: "崇庆寺：宋代罗汉像"
+        kind: visit
+      - duration: "1小时"
+        action: "午餐与休息"
+        kind: meal
+      - duration: "1小时30分钟"
+        action: "前往高平市区并入住"
+        kind: drive
+
+  - day: 4
+    label: "D4"
+    day_type: local
+    city: 高平
+    theme: "高平 · 壁画与早期民居"
+    route_class: spur
+    route:
+      start: [35.8010, 112.9310]
+      via:
+        - 开化寺
+        - 姬氏民居
+        - 崇明寺
+      end: [35.8000, 112.9300]
+      terrain: national
+    stop_tags:
+      - "开化寺"
+      - "姬氏民居"
+      - "崇明寺"
+      - "🏨 高平"
+    tips:
+      - "🎨 开化寺壁画是当天核心，预留充足室内参观时间"
+      - "🏠 姬氏民居和崇明寺之间车程不长，注意村道会车"
+      - "☔ 雨天减少土路支线，优先保证主线古建"
+    timeline:
+      - time: "08:30"
+        action: "高平出发，前往开化寺"
+        kind: fixed
+      - duration: "30分钟"
+        action: "抵达开化寺，参观北宋壁画"
+        kind: visit
+      - duration: "10分钟"
+        action: "开化寺 → 姬氏民居"
+        kind: drive
+      - duration: "45分钟"
+        action: "姬氏民居：早期民居木构"
+        kind: visit
+      - duration: "1小时"
+        action: "午餐与休息"
+        kind: meal
+      - duration: "40分钟"
+        action: "前往崇明寺"
+        kind: drive
+      - duration: "1小时"
+        action: "崇明寺北宋大木作"
+        kind: visit
+      - duration: "40分钟"
+        action: "返回高平市区"
+        kind: drive
+
+  - day: 5
+    label: "D5"
+    day_type: transit
+    city: 晋城
+    theme: "高平 → 晋城 · 宋塑与星宿"
+    route_class: main
+    route:
+      start: 高平
+      via:
+        - 府城玉皇庙
+        - 青莲寺
+      end: 晋城
+      terrain: national
+    stop_tags:
+      - "府城玉皇庙"
+      - "青莲寺"
+      - "🏨 晋城"
+    tips:
+      - "⭐ 玉皇庙二十八星宿彩塑是重点，留足讲解时间"
+      - "🕘 青莲寺可能受文保开放安排影响，提前电话确认"
+      - "🏨 晋城只住一晚，行李尽量精简"
+    timeline:
+      - time: "08:30"
+        action: "高平退房，前往府城玉皇庙"
+        kind: fixed
+      - duration: "1小时"
+        action: "抵达玉皇庙，参观二十八星宿彩塑"
+        kind: visit
+      - duration: "20分钟"
+        action: "前往青莲寺"
+        kind: drive
+      - duration: "1小时"
+        action: "青莲寺古建与彩塑"
+        kind: visit
+      - duration: "1小时"
+        action: "午餐与休息"
+        kind: meal
+      - duration: "45分钟"
+        action: "前往晋城市区并入住"
+        kind: drive
+
+  - day: 6
+    label: "D6"
+    day_type: transit
+    city: 平顺
+    theme: "晋城 → 浊漳河谷"
+    route_class: main
+    route:
+      start: 晋城
+      via:
+        - 原起寺
+        - 大云院
+        - 天台庵
+        - 龙门寺
+        - 淳化寺
+      end: 平顺
+      terrain: mountain
+    stop_tags:
+      - "原起寺"
+      - "大云院"
+      - "天台庵"
+      - "龙门寺"
+      - "淳化寺"
+      - "🏨 平顺"
+    tips:
+      - "🚗 当天景点多且分散，优先保证龙门寺和大云院"
+      - "🔦 多数殿内无照明，带手电并提前联系文保员"
+      - "🌧️ 河谷山路雨后湿滑，天黑前抵达平顺县城"
+    timeline:
+      - time: "07:30"
+        action: "晋城出发，北上浊漳河谷"
+        kind: fixed
+      - duration: "2小时30分钟"
+        action: "车程前往河谷，途中休息与换驾"
+        kind: drive
+      - duration: "35分钟"
+        action: "原起寺：宋塔与河谷"
+        kind: visit
+      - duration: "30分钟"
+        action: "大云院：五代壁画"
+        kind: visit
+      - duration: "20分钟"
+        action: "前往天台庵"
+        kind: drive
+      - duration: "40分钟"
+        action: "天台庵：五代木构"
+        kind: visit
+      - duration: "1小时"
+        action: "龙门寺：六朝木构于一寺"
+        kind: visit
+      - duration: "1小时"
+        action: "午餐与休息"
+        kind: meal
+      - duration: "30分钟"
+        action: "淳化寺：金代大殿"
+        kind: visit
+      - duration: "40分钟"
+        action: "前往平顺县城并入住"
+        kind: drive
+
+  - day: 7
+    label: "D7"
+    day_type: transit
+    city: 北京
+    theme: "平顺 → 邯郸 → 北京"
+    route_class: main
+    route:
+      start: 平顺
+      via:
+        - [36.6256, 114.5391]
+      end: 北京
+      terrain: highway
+    stop_tags:
+      - "🏠 返回北京"
+    tips:
+      - "🌅 早间向东行驶可能迎光，备偏光镜"
+      - "🛣️ 长距离返程，每两小时休息与换驾"
+      - "🚦 返京车流大，为晚高峰预留一小时"
+    timeline:
+      - time: "07:00"
+        action: "平顺出发，经高速返回北京"
+        kind: fixed
+      - duration: "3小时30分钟"
+        action: "高速行驶，服务区休息与换驾"
+        kind: drive
+      - duration: "1小时"
+        action: "午餐与补给"
+        kind: meal
+      - duration: "3小时30分钟"
+        action: "继续返京，按拥堵情况调整休息"
+        kind: drive
+      - time: "下午"
+        action: "抵达北京，结束行程"
+        kind: anchor

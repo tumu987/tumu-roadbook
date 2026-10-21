@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../schema/trip.schema.json
 # 🏔️ 川西小环线 — 行程数据
 # 经典7天：成都 → 康定 → 新都桥 → 塔公/丹巴 → 四姑娘山 → 成都
 # 海拔警示：折多山垭口 4298m，全程最高点
@@ -5,10 +6,16 @@
 trip:
   title: 🏔️ 川西小环线
   subtitle: 成都出发 · 康定 · 新都桥 · 丹巴 · 四姑娘山 · 七日雪山巡礼
+  index:
+    order: 2
+    region: 四川 · 川西小环线
+    color: '#3f8d73'
+    summary: 成都出发，经康定、新都桥、丹巴与四姑娘山。路线同时标注高海拔跃升，方便安排适应节奏。
   dates: 7月
   start_date: "2026-07-11"
   basemap: light
   drivers: 2
+  coordinate_verification: strict
   stats:
     days: 7
     distance: "~1,100"
@@ -24,34 +31,73 @@ cities:
 
 pois:
   - name: 泸定桥
+    lat: 29.914497
+    lng: 102.230205
     rank: major
     iconAnchor: [0, -20]
+    coord_source: osm
+    osm_id: way/877739922
+    verified_at: "2026-10-21"
   - name: 折多山垭口
+    lat: 30.089833
+    lng: 101.834695
     rank: major
     iconAnchor: [0, -20]
+    coord_source: osm
+    osm_id: node/13092228801
+    verified_at: "2026-10-21"
   - name: 塔公草原
+    lat: 30.337029
+    lng: 101.560724
     rank: major
     iconAnchor: [0, 18]
+    coord_source: osm
+    osm_id: relation/21297744
+    verified_at: "2026-10-21"
   - name: 墨石公园
     hint: 道孚
-    coord: [30.4496, 101.5417]
+    lat: 30.449590
+    lng: 101.541669
     rank: major
     shuttle: true
     iconAnchor: [0, -20]
+    coord_source: osm
+    osm_id: way/1229857129
+    verified_at: "2026-10-21"
   - name: 雅拉雪山观景台
+    lat: 30.529198
+    lng: 101.619066
     rank: major
     iconAnchor: [0, -20]
+    coord_source: osm
+    osm_id: node/2955353670
+    verified_at: "2026-10-21"
   - name: 甲居藏寨
+    lat: 30.943108
+    lng: 101.864079
     rank: major
     iconAnchor: [0, 18]
+    coord_source: osm
+    osm_id: relation/18184448
+    verified_at: "2026-10-21"
   - name: 双桥沟
     hint: "四姑娘山"
+    lat: 30.981747
+    lng: 102.767846
     rank: major
     shuttle: true
     iconAnchor: [0, -20]
+    coord_source: osm
+    osm_id: node/3442492795
+    verified_at: "2026-10-21"
   - name: 巴朗山垭口
+    lat: 30.910711
+    lng: 102.894498
     rank: major
     iconAnchor: [0, 18]
+    coord_source: osm
+    osm_id: node/3830622400
+    verified_at: "2026-10-21"
   - name: 鱼子西
     rank: minor
   - name: 惠远寺

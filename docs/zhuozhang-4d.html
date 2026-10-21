@@ -738,6 +738,10 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 .tag-purple { background: rgba(131,151,207,0.1); border-color: rgba(131,151,207,0.2); color: #7a8eb8; }
 .tag-rose { background: rgba(200,120,120,0.1); border-color: rgba(200,120,120,0.2); color: #b07878; }
 .tag-elev { background: rgba(80,140,180,0.1); border-color: rgba(80,140,180,0.2); color: #5a88a8; }
+.tag-pace-easy { background: rgba(47,143,108,.1); border-color: rgba(47,143,108,.25); color: #2f8f6c; }
+.tag-pace-normal { background: rgba(86,117,185,.1); border-color: rgba(86,117,185,.25); color: #5675b9; }
+.tag-pace-tight { background: rgba(217,154,43,.12); border-color: rgba(217,154,43,.3); color: #b47716; }
+.tag-pace-avoid { background: rgba(217,92,74,.12); border-color: rgba(217,92,74,.3); color: #c94d3c; }
 .tip-note { font-size: 12px; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
 .tip-note .ti { flex-shrink: 0; }
 
@@ -752,8 +756,14 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 .day-card { background: #fff; border: 1px solid #f0ede6; border-radius: 14px; padding: 20px; transition: box-shadow 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
 .day-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
 .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #f0ede6; }
+.day-header-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .day-label { font-size: 14px; font-weight: 700; }
 .day-date { font-size: 12px; color: #a0987a; }
+.day-pace { padding: 3px 7px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+.day-pace-easy { color: #2f8f6c; background: rgba(47,143,108,.1); }
+.day-pace-normal { color: #5675b9; background: rgba(86,117,185,.1); }
+.day-pace-tight { color: #b47716; background: rgba(217,154,43,.12); }
+.day-pace-avoid { color: #c94d3c; background: rgba(217,92,74,.12); }
 .highlight { color: #c49a6c; font-weight: 600; }
 .day-route { font-size: 14px; color: #c49a6c; margin-bottom: 8px; }
 .day-route-path { color: #5d7f91; font-weight: 600; }
@@ -774,12 +784,16 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 .tl-row { display: flex; gap: 8px; padding: 3px 0; font-size: 12px; line-height: 1.5; }
 .tl-time { color: #b8b09a; font-family: monospace; flex-shrink: 0; min-width: 5em; }
 .tl-action { color: #5a5240; }
-.day-timeline { margin: 14px 0 2px; padding-left: 14px; border-left-color: #ddd6c8; }
+.day-timeline { margin: 14px 0 2px; padding-left: 0; border-left: 0; }
 .day-timeline .tl-row { align-items: baseline; padding: 7px 0; border-bottom: 1px solid #f2eee7; }
 .day-timeline .tl-row:last-child { border-bottom: 0; padding-bottom: 0; }
 .day-timeline .tl-time { color: #a66b35; font-weight: 600; min-width: 7.6em; }
 .day-timeline .tl-duration { color: #8c8170; font-weight: 500; }
 .day-timeline .tl-action { color: #5a5240; }
+.tl-alert-row { display: flex; align-items: flex-start; gap: 8px; padding: 7px 0; border-bottom: 1px dashed #eadcc2; color: #8a6129; font-size: 12px; line-height: 1.55; }
+.tl-alert-label { flex-shrink: 0; min-width: 4.2em; color: #c17d18; font-weight: 700; }
+.day-alert-list { margin-top: 12px; padding-top: 8px; border-top: 1px dashed #eadcc2; }
+.day-alert-list .tl-alert-row:last-child { padding-bottom: 0; border-bottom: 0; }
 
 @media (max-width: 640px) { #map { height: 280px; touch-action: pan-y; } }
 @media (max-width: 640px) { .container { padding: 20px 16px; } header h1 { font-size: 22px; } .stop { gap: 12px; } .stop-title { font-size: 14px; } .day-cards { grid-template-columns: 1fr; } .day-label{font-size:16px!important} .day-date{font-size:13px!important} .day-route{font-size:14px!important} .day-items{font-size:14px!important} }
@@ -814,7 +828,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
       <div class="stop-content">
         <div class="stop-title" style="color:#d95c4a">D1 <span class="st-sub">北京 → 石家庄 → 平顺</span></div>
         <div class="stop-meta">🚗 587km·9h8</div>
-        <div class="stop-tags"><span class="tag">🏨 平顺 2 晚</span><span class="tag">🚗 双驾优先</span></div>
+        <div class="stop-tags"><span class="tag tag-pace tag-pace-tight">🟠 偏紧 · 9h30</span><span class="tag">🏨 平顺 2 晚</span><span class="tag">🚗 双驾优先</span></div>
         <div class="tip-note">🛣️ 首日约 570km、净驾驶 7h 左右；建议两人轮驾</div><div class="tip-note">📱 提前下载山西离线地图，太行山区信号断续</div><div class="tip-note">⛽ 进入平顺前加满油，第二天不绕回县城加油</div>
       </div>
     </div>
@@ -823,7 +837,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
       <div class="stop-content">
         <div class="stop-title" style="color:#d99a2b">D2 <span class="st-sub">浊漳河谷古建闭环 · 五处国保</span></div>
         <div class="stop-meta">🚗 122km·3h2</div>
-        <div class="stop-tags"><span class="tag">天台庵</span><span class="tag">原起寺</span><span class="tag">淳化寺</span><span class="tag">龙门寺</span><span class="tag">大云院</span></div>
+        <div class="stop-tags"><span class="tag tag-pace tag-pace-easy">🟢 轻松 · 6h50</span><span class="tag">天台庵</span><span class="tag">原起寺</span><span class="tag">淳化寺</span><span class="tag">龙门寺</span><span class="tag">大云院</span></div>
         <div class="tip-note">🔦 殿内普遍无照明，带小手电，禁用闪光灯</div><div class="tip-note">💰 备 10-20 元零钱，部分文保点需联系文保员开门</div><div class="tip-note">📞 出发前逐一确认开放；午休时段可能暂时关门</div><div class="tip-note">🌧️ 河谷道路雨后湿滑，窄路会车减速</div>
       </div>
     </div>
@@ -832,7 +846,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
       <div class="stop-content">
         <div class="stop-title" style="color:#2f8f6c">D3 <span class="st-sub">平顺 → 长治 · 明代悬塑</span></div>
         <div class="stop-meta">🚗 47km·0h55</div>
-        <div class="stop-tags"><span class="tag">长治观音堂</span><span class="tag">上党门</span><span class="tag">🏨 长治</span></div>
+        <div class="stop-tags"><span class="tag tag-pace tag-pace-easy">🟢 轻松 · 4h15</span><span class="tag">长治观音堂</span><span class="tag">上党门</span><span class="tag">🏨 长治</span></div>
         <div class="tip-note">🕘 观音堂午间可能闭门，先看再吃饭</div><div class="tip-note">🚙 当日车程不长，给古建参观留足时间</div><div class="tip-note">🧥 十月底早晚温差大，古建殿内更凉</div>
       </div>
     </div>
@@ -841,7 +855,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
       <div class="stop-content">
         <div class="stop-title" style="color:#5675b9">D4 <span class="st-sub">长治 → 石家庄 → 北京</span></div>
         <div class="stop-meta">🚗 588km·9h9</div>
-        <div class="stop-tags"><span class="tag tag-rose">🏠 返程北京</span></div>
+        <div class="stop-tags"><span class="tag tag-pace tag-pace-tight">🟠 偏紧 · 8h</span><span class="tag tag-rose">🏠 返程北京</span></div>
         <div class="tip-note">🌅 早间向东行驶可能迎光，备好偏光镜</div><div class="tip-note">🚦 周日/节假日返京车流大，预留 1h 缓冲</div><div class="tip-note">🧾 四天总里程约 1,300km，返程后做一次车辆检查</div>
       </div>
     </div>
@@ -851,7 +865,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 <h2 style="font-size:18px;font-weight:700;margin-bottom:16px;color:#94a3b8;">📋 每日详情</h2>
 <div class="day-cards">
   <div class="day-card card-0">
-    <div class="day-header"><span class="day-label" style="color:#d95c4a">D1</span><span class="day-date">🚗 587km·9h8</span></div>
+    <div class="day-header"><span class="day-label" style="color:#d95c4a">D1</span><span class="day-header-meta"><span class="day-date">🚗 587km·9h8</span><span class="day-pace day-pace-tight">偏紧 · 9h30</span></span></div>
     <div class="day-route"><span class="day-route-path">北京 → 石家庄 → 平顺</span></div>
     <div class="timeline day-timeline"><div class="tl-row"><span class="tl-time">06:30</span><span class="tl-action">从住处出发，早餐与午餐干粮提前备好</span></div>
 <div class="tl-row"><span class="tl-time tl-duration">约3小时</span><span class="tl-action">京港澳高速南下，服务区灵活休息</span></div>
@@ -859,11 +873,10 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 <div class="tl-row"><span class="tl-time tl-duration">约4小时30分钟</span><span class="tl-action">继续前往平顺，按疲劳程度增加休息</span></div>
 <div class="tl-row"><span class="tl-time">约15:30</span><span class="tl-action">抵达平顺县城，入住第 1 晚</span></div>
 <div class="tl-row"><span class="tl-time tl-duration">约1小时</span><span class="tl-action">县城晚餐、补给，确认次日文保点开放情况</span></div></div>
-    
-    
+    <div class="day-alert-list"><div class="tl-alert-row"><span class="tl-alert-label">提醒</span><span>🌅 D1 由东向西 — 下午 16:00-18:00 迎光驾驶，注意遮阳</span></div><div class="tl-alert-row"><span class="tl-alert-label">提醒</span><span>⏱ D1 北京 → 石家庄 → 平顺: 当日计划约 9h30，强度偏紧</span></div></div>
   </div>
   <div class="day-card card-1">
-    <div class="day-header"><span class="day-label" style="color:#d99a2b">D2</span><span class="day-date">🚗 122km·3h2</span></div>
+    <div class="day-header"><span class="day-label" style="color:#d99a2b">D2</span><span class="day-header-meta"><span class="day-date">🚗 122km·3h2</span><span class="day-pace day-pace-easy">轻松 · 6h50</span></span></div>
     <div class="day-route"><span class="day-route-path">浊漳河谷古建闭环</span><span class="day-route-separator"> · </span><span class="day-route-focus">五处国保</span></div>
     <div class="timeline day-timeline"><div class="tl-row"><span class="tl-time">08:00</span><span class="tl-action">从平顺县城出发</span></div>
 <div class="tl-row"><span class="tl-time tl-duration">约40分钟</span><span class="tl-action">平顺 → 大云院</span></div>
@@ -879,10 +892,9 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 <div class="tl-row"><span class="tl-time tl-duration">约1小时</span><span class="tl-action">石城村午餐与休息</span></div>
 <div class="tl-row"><span class="tl-time tl-duration">约40分钟</span><span class="tl-action">回到平顺县城，入住第 2 晚</span></div></div>
     
-    
   </div>
   <div class="day-card card-2">
-    <div class="day-header"><span class="day-label" style="color:#2f8f6c">D3</span><span class="day-date">🚗 47km·0h55</span></div>
+    <div class="day-header"><span class="day-label" style="color:#2f8f6c">D3</span><span class="day-header-meta"><span class="day-date">🚗 47km·0h55</span><span class="day-pace day-pace-easy">轻松 · 4h15</span></span></div>
     <div class="day-route"><span class="day-route-path">平顺 → 长治</span><span class="day-route-separator"> · </span><span class="day-route-focus">明代悬塑</span></div>
     <div class="timeline day-timeline"><div class="tl-row"><span class="tl-time">08:30</span><span class="tl-action">从平顺退房出发</span></div>
 <div class="tl-row"><span class="tl-time tl-duration">约1小时</span><span class="tl-action">驶向长治</span></div>
@@ -892,22 +904,20 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 <div class="tl-row"><span class="tl-time tl-duration">预计45分钟</span><span class="tl-action">上党门与老城散步</span></div>
 <div class="tl-row"><span class="tl-time tl-duration">约15分钟</span><span class="tl-action">前往酒店，入住长治市区第 3 晚</span></div></div>
     
-    
   </div>
   <div class="day-card card-3">
-    <div class="day-header"><span class="day-label" style="color:#5675b9">D4</span><span class="day-date">🚗 588km·9h9</span></div>
+    <div class="day-header"><span class="day-label" style="color:#5675b9">D4</span><span class="day-header-meta"><span class="day-date">🚗 588km·9h9</span><span class="day-pace day-pace-tight">偏紧 · 8h</span></span></div>
     <div class="day-route"><span class="day-route-path">长治 → 石家庄 → 北京</span></div>
     <div class="timeline day-timeline"><div class="tl-row"><span class="tl-time">07:30</span><span class="tl-action">长治出发，早餐在酒店或出发前解决</span></div>
 <div class="tl-row"><span class="tl-time tl-duration">约3小时</span><span class="tl-action">沿高速返京，服务区灵活休息与换驾</span></div>
 <div class="tl-row"><span class="tl-time tl-duration">约1小时</span><span class="tl-action">午餐，继续返京</span></div>
 <div class="tl-row"><span class="tl-time tl-duration">约4小时</span><span class="tl-action">继续返京，按进京拥堵情况调整休息</span></div>
 <div class="tl-row"><span class="tl-time">约16:00</span><span class="tl-action">预计抵达北京</span></div></div>
-    
-    
+    <div class="day-alert-list"><div class="tl-alert-row"><span class="tl-alert-label">提醒</span><span>🌅 D4 由西向东 — 早晨 07:00-09:00 迎光驾驶，注意遮阳</span></div><div class="tl-alert-row"><span class="tl-alert-label">提醒</span><span>⏱ D4 长治 → 石家庄 → 北京: 当日计划约 8h，强度偏紧</span></div></div>
   </div>
 </div>
 
-<div class="footer">Tumu Roadbook v0.1.8 · YAML 驱动的自驾路线图</div>
+<div class="footer">Tumu Roadbook v0.2.0 · YAML 驱动的自驾路线图</div>
 </div>
 
 <script>/* @preserve
@@ -923,10 +933,10 @@ var r_2 = [[36.203477, 113.439554], [36.205005, 113.436561], [36.214318, 113.444
 var r_3 = [[36.200151, 113.439324], [36.20103, 113.436272], [36.186691, 113.404105], [36.184584, 113.385187], [36.190195, 113.374759], [36.192028, 113.35812], [36.199701, 113.329029], [36.209872, 113.314021], [36.207072, 113.300432], [36.211013, 113.293071], [36.215526, 113.274875], [36.22761, 113.257652], [36.238766, 113.253886], [36.242886, 113.233014], [36.247409, 113.227979], [36.250131, 113.213173], [36.245628, 113.174925], [36.238698, 113.163008], [36.239285, 113.156453], [36.221685, 113.148754], [36.2327, 113.091237], [36.222807, 113.087779], [36.225667, 113.075243], [36.227211, 113.076633], [36.225582, 113.075193], [36.222719, 113.087768], [36.21115, 113.085314], [36.203137, 113.118049], [36.192011, 113.113429], [36.191115, 113.116061]];
 var r_4 = [[36.191115, 113.116061], [36.466832, 113.266847], [36.467062, 113.320939], [36.532966, 113.392503], [36.518154, 113.620246], [36.577895, 113.709583], [36.568186, 113.757045], [36.644309, 113.817372], [36.631574, 113.914424], [36.714046, 113.949943], [36.905904, 114.164834], [37.293602, 114.313295], [37.798579, 114.31434], [37.951743, 114.500655], [38.042377, 114.514906], [38.043469, 114.570994], [38.162629, 114.588645], [38.348779, 114.732952], [38.437842, 114.866776], [38.461957, 114.983971], [38.571815, 115.078526], [38.725617, 115.325593], [38.740761, 115.467937], [38.78744, 115.537758], [39.112041, 115.734144], [39.429742, 116.012171], [39.733717, 116.109563], [39.8416, 116.207009], [39.904421, 116.407381]];
 var mainRoutes = [
-  ['#d95c4a', r_1],
-  ['#d99a2b', r_2],
-  ['#2f8f6c', r_3],
-  ['#5675b9', r_4],
+  ['#d95c4a', r_1, 'road'],
+  ['#d99a2b', r_2, 'road'],
+  ['#2f8f6c', r_3, 'road'],
+  ['#5675b9', r_4, 'road'],
 ];
 var spurRoutes = [];
 var cityPosData = [{"name": "北京", "lat": 39.9042, "lng": 116.4074, "color": "#d95c4a", "elevation": 51}, {"name": "平顺", "lat": 36.2, "lng": 113.439, "color": "#d95c4a", "elevation": 1077}, {"name": "长治", "lat": 36.191, "lng": 113.116, "color": "#2f8f6c", "elevation": 933}];
@@ -976,7 +986,13 @@ function mw(txt, s) {
 
 // ── 路线（主路线 + 支线 + 端线段数据）──
 for (var i = 0; i < mainRoutes.length; i++)
-  L.polyline(mainRoutes[i][1], { color: mainRoutes[i][0], weight: 4, opacity: 0.85, smoothFactor: 1 }).addTo(map);
+  L.polyline(mainRoutes[i][1], {
+    color: mainRoutes[i][0],
+    weight: 4,
+    opacity: mainRoutes[i][2] === 'estimated' ? 0.65 : 0.85,
+    dashArray: mainRoutes[i][2] === 'estimated' ? '8,6' : null,
+    smoothFactor: 1
+  }).addTo(map);
 var spurLayer = L.layerGroup();
 
 // 预采样路线线段（每 5 个点取一段），用于像素碰撞
@@ -1172,6 +1188,7 @@ spots.forEach(function(s){ab.extend([s[0],s[1]]);});
 map.fitBounds(ab,{padding:[50,50]});
 var overviewBounds = map.getBounds();
 var focusCfg = {"label": "聚焦河谷", "center": [36.29, 113.4], "zoom": 10};
+var poiZoom = {"major": 10, "minor": 11};
 var focusActive = false;
 var focusBtn = document.getElementById('focus-btn');
 if (focusCfg && focusCfg.center && focusCfg.zoom) {
@@ -1251,12 +1268,21 @@ function u() {
   spurLayer.clearLayers();
   if (z>=10) {
     for (var i=0;i<spurRoutes.length;i++)
-      spurLayer.addLayer(L.polyline(spurRoutes[i][1],{color:spurRoutes[i][0],weight:3,opacity:0.6,smoothFactor:1}));
+      spurLayer.addLayer(L.polyline(spurRoutes[i][1],{
+        color: spurRoutes[i][0],
+        weight: 3,
+        opacity: spurRoutes[i][2] === 'estimated' ? 0.5 : 0.6,
+        dashArray: spurRoutes[i][2] === 'estimated' ? '7,5' : null,
+        smoothFactor: 1
+      }));
   }
-  if (z>=10&&!map.hasLayer(poiMajor)) map.addLayer(poiMajor);
-  else if (z<10&&map.hasLayer(poiMajor)) map.removeLayer(poiMajor);
-  if (z>=11&&!map.hasLayer(poiMinor)) map.addLayer(poiMinor);
-  else if (z<11&&map.hasLayer(poiMinor)) map.removeLayer(poiMinor);
+  var compactAdjust = map.getSize().x < 420 ? 1 : 0;
+  var majorMinZoom = poiZoom.major + compactAdjust;
+  var minorMinZoom = poiZoom.minor + compactAdjust;
+  if (z>=majorMinZoom&&!map.hasLayer(poiMajor)) map.addLayer(poiMajor);
+  else if (z<majorMinZoom&&map.hasLayer(poiMajor)) map.removeLayer(poiMajor);
+  if (z>=minorMinZoom&&!map.hasLayer(poiMinor)) map.addLayer(poiMinor);
+  else if (z<minorMinZoom&&map.hasLayer(poiMinor)) map.removeLayer(poiMinor);
   if (!map.hasLayer(spurLayer)) map.addLayer(spurLayer);
   
   if (map.hasLayer(dotLayer)){map.removeLayer(dotLayer);map.addLayer(dotLayer);}

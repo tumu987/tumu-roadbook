@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏛️ 晋东南古建自驾路线图</title>
+<title>🏛️ 晋东南上党古建</title>
 <style>/* required styles */
 
 .leaflet-pane,
@@ -738,6 +738,10 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 .tag-purple { background: rgba(131,151,207,0.1); border-color: rgba(131,151,207,0.2); color: #7a8eb8; }
 .tag-rose { background: rgba(200,120,120,0.1); border-color: rgba(200,120,120,0.2); color: #b07878; }
 .tag-elev { background: rgba(80,140,180,0.1); border-color: rgba(80,140,180,0.2); color: #5a88a8; }
+.tag-pace-easy { background: rgba(47,143,108,.1); border-color: rgba(47,143,108,.25); color: #2f8f6c; }
+.tag-pace-normal { background: rgba(86,117,185,.1); border-color: rgba(86,117,185,.25); color: #5675b9; }
+.tag-pace-tight { background: rgba(217,154,43,.12); border-color: rgba(217,154,43,.3); color: #b47716; }
+.tag-pace-avoid { background: rgba(217,92,74,.12); border-color: rgba(217,92,74,.3); color: #c94d3c; }
 .tip-note { font-size: 12px; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
 .tip-note .ti { flex-shrink: 0; }
 
@@ -755,8 +759,14 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 .day-card { background: #fff; border: 1px solid #f0ede6; border-radius: 14px; padding: 20px; transition: box-shadow 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
 .day-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
 .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #f0ede6; }
+.day-header-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .day-label { font-size: 14px; font-weight: 700; }
 .day-date { font-size: 12px; color: #a0987a; }
+.day-pace { padding: 3px 7px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+.day-pace-easy { color: #2f8f6c; background: rgba(47,143,108,.1); }
+.day-pace-normal { color: #5675b9; background: rgba(86,117,185,.1); }
+.day-pace-tight { color: #b47716; background: rgba(217,154,43,.12); }
+.day-pace-avoid { color: #c94d3c; background: rgba(217,92,74,.12); }
 .highlight { color: #c49a6c; font-weight: 600; }
 .day-route { font-size: 14px; color: #c49a6c; margin-bottom: 8px; }
 .day-route-path { color: #5d7f91; font-weight: 600; }
@@ -777,12 +787,16 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 .tl-row { display: flex; gap: 8px; padding: 3px 0; font-size: 12px; line-height: 1.5; }
 .tl-time { color: #b8b09a; font-family: monospace; flex-shrink: 0; min-width: 5em; }
 .tl-action { color: #5a5240; }
-.day-timeline { margin: 14px 0 2px; padding-left: 14px; border-left-color: #ddd6c8; }
+.day-timeline { margin: 14px 0 2px; padding-left: 0; border-left: 0; }
 .day-timeline .tl-row { align-items: baseline; padding: 7px 0; border-bottom: 1px solid #f2eee7; }
 .day-timeline .tl-row:last-child { border-bottom: 0; padding-bottom: 0; }
 .day-timeline .tl-time { color: #a66b35; font-weight: 600; min-width: 7.6em; }
 .day-timeline .tl-duration { color: #8c8170; font-weight: 500; }
 .day-timeline .tl-action { color: #5a5240; }
+.tl-alert-row { display: flex; align-items: flex-start; gap: 8px; padding: 7px 0; border-bottom: 1px dashed #eadcc2; color: #8a6129; font-size: 12px; line-height: 1.55; }
+.tl-alert-label { flex-shrink: 0; min-width: 4.2em; color: #c17d18; font-weight: 700; }
+.day-alert-list { margin-top: 12px; padding-top: 8px; border-top: 1px dashed #eadcc2; }
+.day-alert-list .tl-alert-row:last-child { padding-bottom: 0; border-bottom: 0; }
 
 @media (max-width: 640px) { #map { height: 280px; touch-action: pan-y; } }
 @media (max-width: 640px) { .container { padding: 20px 16px; } header h1 { font-size: 22px; } .stop { gap: 12px; } .stop-title { font-size: 14px; } .day-cards { grid-template-columns: 1fr; } .day-label{font-size:16px!important} .day-date{font-size:13px!important} .day-route{font-size:14px!important} .day-items{font-size:14px!important} }
@@ -794,8 +808,8 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 
 <header>
   <div>
-    <h1>🏛️ 晋东南古建自驾路线图</h1>
-    <div class="sub">北京出发 · 浊漳河谷 · 长治 · 高平 · 晋城 · 七日古建巡礼 · 7天 约~2,200km</div>
+    <h1>🏛️ 晋东南上党古建</h1>
+    <div class="sub">北京往返 · 长治 · 长子 · 高平 · 晋城 · 浊漳河谷 · 7天 约1,730km</div>
   </div>
 </header>
 
@@ -815,64 +829,64 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
     <div class="stop stop-0">
       <div class="stop-marker"><div class="stop-dot">1</div><div class="stop-line"></div></div>
       <div class="stop-content">
-        <div class="stop-title" style="color:#e74c3c">D1 <span class="st-sub">北京 → 平顺</span></div>
-        <div class="stop-meta">🚗 586km · 6.8h</div>
-        <div class="stop-tags"><span class="tag">龙门寺</span><span class="tag">淳化寺</span></div>
-        <div class="tip-note">📱 提前下载离线地图 — 太行山区多无信号</div><div class="tip-note">🌅 上午看古建光线最好，下午背光</div>
+        <div class="stop-title" style="color:#e74c3c">D1 <span class="st-sub">北京 → 邯郸 → 长治</span></div>
+        <div class="stop-meta">🚗 616km·9h25</div>
+        <div class="stop-tags"><span class="tag tag-pace tag-pace-tight">🟠 偏紧 · 8h</span><span class="tag">🏨 长治</span><span class="tag">🛣️ 进晋</span></div>
+        <div class="tip-note">🚗 首日以赶路为主，建议双驾并在邯郸附近补给</div><div class="tip-note">📱 提前下载长治与太行山区离线地图</div><div class="tip-note">⛽ 进入山西前加满油，避免晚高峰进城</div>
       </div>
     </div>
     <div class="stop stop-1">
       <div class="stop-marker"><div class="stop-dot">2</div><div class="stop-line"></div></div>
       <div class="stop-content">
-        <div class="stop-title" style="color:#f39c12">D2 <span class="st-sub">平顺 · 浊漳河谷</span></div>
-        <div class="stop-meta">🚗 85km · 1.5h</div>
-        <div class="stop-tags"><span class="tag">大云院</span><span class="tag">天台庵</span><span class="tag">原起寺</span><span class="tag">九天圣母庙</span></div>
-        <div class="tip-note">🔦 古殿内多无照明，自带手电筒</div><div class="tip-note">💰 备零钱10-20元，找文保员开门</div><div class="tip-note">🌧️ 河谷山路雨后易滑，注意安全</div>
+        <div class="stop-title" style="color:#f39c12">D2 <span class="st-sub">长治市区 · 明代悬塑</span></div>
+        <div class="stop-meta">🚗 16km·0h27</div>
+        <div class="stop-tags"><span class="tag tag-pace tag-pace-easy">🟢 轻松 · 3h15</span><span class="tag">长治观音堂</span><span class="tag">上党门</span><span class="tag">🏨 长治</span></div>
+        <div class="tip-note">🕘 观音堂可能午间闭门，先参观再午餐</div><div class="tip-note">🔦 殿内光线较暗，使用手电并关闭闪光灯</div><div class="tip-note">🏙️ 上党门安排在傍晚，老城步行更舒服</div>
       </div>
     </div>
     <div class="stop stop-2">
       <div class="stop-marker"><div class="stop-dot">3</div><div class="stop-line"></div></div>
       <div class="stop-content">
-        <div class="stop-title" style="color:#27ae60">D3 <span class="st-sub">平顺 → 长治</span></div>
-        <div class="stop-meta">🚗 53km · 52min</div>
-        <div class="stop-tags"><span class="tag">观音堂悬塑</span><span class="tag">上党门</span><span class="tag tag-purple">🕌 铜锅街清真晚餐</span></div>
-        
+        <div class="stop-title" style="color:#27ae60">D3 <span class="st-sub">长治 → 长子 → 高平</span></div>
+        <div class="stop-meta">🚗 71km·1h33</div>
+        <div class="stop-tags"><span class="tag tag-pace tag-pace-easy">🟢 轻松 · 5h20</span><span class="tag">法兴寺</span><span class="tag">崇庆寺</span><span class="tag">🏨 高平</span></div>
+        <div class="tip-note">💰 准备零钱或联系文保员，部分古建并非全天开放</div><div class="tip-note">📞 出发前确认法兴寺与崇庆寺的午休时间</div><div class="tip-note">📸 彩塑殿内禁止闪光灯</div>
       </div>
     </div>
     <div class="stop stop-3">
       <div class="stop-marker"><div class="stop-dot">4</div><div class="stop-line"></div></div>
       <div class="stop-content">
-        <div class="stop-title" style="color:#00bcd4">D4 <span class="st-sub">长治周边</span></div>
-        <div class="stop-meta">🚗 72km · 1.2h</div>
-        <div class="stop-tags"><span class="tag">法兴寺彩塑</span><span class="tag">崇庆寺</span><span class="tag">金灯寺石窟</span></div>
-        
+        <div class="stop-title" style="color:#00bcd4">D4 <span class="st-sub">高平 · 壁画与早期民居</span></div>
+        <div class="stop-meta">🚗 80km·2h2</div>
+        <div class="stop-tags"><span class="tag tag-pace tag-pace-easy">🟢 轻松 · 4h45</span><span class="tag">开化寺</span><span class="tag">姬氏民居</span><span class="tag">崇明寺</span><span class="tag">🏨 高平</span></div>
+        <div class="tip-note">🎨 开化寺壁画是当天核心，预留充足室内参观时间</div><div class="tip-note">🏠 姬氏民居和崇明寺之间车程不长，注意村道会车</div><div class="tip-note">☔ 雨天减少土路支线，优先保证主线古建</div>
       </div>
     </div>
     <div class="stop stop-4">
       <div class="stop-marker"><div class="stop-dot">5</div><div class="stop-line"></div></div>
       <div class="stop-content">
-        <div class="stop-title" style="color:#3f51b5">D5 <span class="st-sub">长治 → 高平</span></div>
-        <div class="stop-meta">🚗 100km · 2h</div>
-        <div class="stop-tags"><span class="tag">开化寺壁画</span><span class="tag">姬氏民居</span><span class="tag">崇明寺</span></div>
-        
+        <div class="stop-title" style="color:#3f51b5">D5 <span class="st-sub">高平 → 晋城 · 宋塑与星宿</span></div>
+        <div class="stop-meta">🚗 73km·1h26</div>
+        <div class="stop-tags"><span class="tag tag-pace tag-pace-easy">🟢 轻松 · 4h05</span><span class="tag">府城玉皇庙</span><span class="tag">青莲寺</span><span class="tag">🏨 晋城</span></div>
+        <div class="tip-note">⭐ 玉皇庙二十八星宿彩塑是重点，留足讲解时间</div><div class="tip-note">🕘 青莲寺可能受文保开放安排影响，提前电话确认</div><div class="tip-note">🏨 晋城只住一晚，行李尽量精简</div>
       </div>
     </div>
     <div class="stop stop-5">
       <div class="stop-marker"><div class="stop-dot">6</div><div class="stop-line"></div></div>
       <div class="stop-content">
-        <div class="stop-title" style="color:#9c27b0">D6 <span class="st-sub">高平 → 晋城 · 皇城相府</span></div>
-        <div class="stop-meta">🚗 107km · 2h</div>
-        <div class="stop-tags"><span class="tag">玉皇庙星宿彩塑</span><span class="tag">青莲寺</span><span class="tag">皇城相府</span><span class="tag tag-purple">🕌 南大街清真美食</span></div>
-        
+        <div class="stop-title" style="color:#9c27b0">D6 <span class="st-sub">晋城 → 浊漳河谷</span></div>
+        <div class="stop-meta">🚗 246km·4h57</div>
+        <div class="stop-tags"><span class="tag tag-pace tag-pace-tight">🟠 偏紧 · 7h45</span><span class="tag">原起寺</span><span class="tag">大云院</span><span class="tag">天台庵</span><span class="tag">龙门寺</span><span class="tag">淳化寺</span></div>
+        <div class="tip-note">🚗 当天景点多且分散，优先保证龙门寺和大云院</div><div class="tip-note">🔦 多数殿内无照明，带手电并提前联系文保员</div><div class="tip-note">🌧️ 河谷山路雨后湿滑，天黑前抵达平顺县城</div>
       </div>
     </div>
     <div class="stop stop-6">
       <div class="stop-marker"><div class="stop-dot">7</div><div class="stop-line"></div></div>
       <div class="stop-content">
-        <div class="stop-title" style="color:#e91e63">D7 <span class="st-sub">湘峪古堡 → 🏠 北京</span></div>
-        <div class="stop-meta">🚗 79→752km · 8.5h</div>
-        <div class="stop-tags"><span class="tag">湘峪古堡早</span><span class="tag tag-rose">返程 🏠</span></div>
-        
+        <div class="stop-title" style="color:#e91e63">D7 <span class="st-sub">平顺 → 邯郸 → 北京</span></div>
+        <div class="stop-meta">🚗 626km·9h39</div>
+        <div class="stop-tags"><span class="tag tag-pace tag-pace-tight">🟠 偏紧 · 8h</span><span class="tag">🏠 返回北京</span></div>
+        <div class="tip-note">🌅 早间向东行驶可能迎光，备偏光镜</div><div class="tip-note">🛣️ 长距离返程，每两小时休息与换驾</div><div class="tip-note">🚦 返京车流大，为晚高峰预留一小时</div>
       </div>
     </div>
   </div>
@@ -881,76 +895,89 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 <h2 style="font-size:18px;font-weight:700;margin-bottom:16px;color:#94a3b8;">📋 每日详情</h2>
 <div class="day-cards">
   <div class="day-card card-0">
-    <div class="day-header"><span class="day-label" style="color:#e74c3c">6月8日（一）</span><span class="day-date">🚗 586km · 6.8h</span></div>
-    <div class="day-route"><span class="day-route-path">北京 → 平顺</span></div>
-    <ul class="day-items"><li>早 7:00 从北京出发</li>
-<li>龙门寺 <span class="highlight">⭐ 六朝木构于一寺</span></li>
-<li>淳化寺 金代大殿</li>
-<li>🏨 宿平顺</li></ul>
-    
-    
+    <div class="day-header"><span class="day-label" style="color:#e74c3c">D1</span><span class="day-header-meta"><span class="day-date">🚗 616km·9h25</span><span class="day-pace day-pace-tight">偏紧 · 8h</span></span></div>
+    <div class="day-route"><span class="day-route-path">北京 → 邯郸 → 长治</span></div>
+    <div class="timeline day-timeline"><div class="tl-row"><span class="tl-time">06:30</span><span class="tl-action">从住处出发，经京港澳高速南下</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约4小时</span><span class="tl-action">高速行驶，服务区按体力休息与换驾</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约1小时</span><span class="tl-action">午餐与补给</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约3小时</span><span class="tl-action">转长治方向，继续行驶</span></div>
+<div class="tl-row"><span class="tl-time">下午</span><span class="tl-action">抵达长治，办理入住并休息</span></div></div>
+    <div class="day-alert-list"><div class="tl-alert-row"><span class="tl-alert-label">提醒</span><span>🌅 D1 由东向西 — 下午 16:00-18:00 迎光驾驶，注意遮阳</span></div><div class="tl-alert-row"><span class="tl-alert-label">提醒</span><span>⏱ D1 北京 → 邯郸 → 长治: 当日计划约 8h，强度偏紧</span></div></div>
   </div>
   <div class="day-card card-1">
-    <div class="day-header"><span class="day-label" style="color:#f39c12">6月9日（二）</span><span class="day-date">🚗 85km · 1.5h</span></div>
-    <div class="day-route"><span class="day-route-path">平顺</span><span class="day-route-separator"> · </span><span class="day-route-focus">浊漳河谷</span></div>
-    <ul class="day-items"><li>龙门寺 → 天台庵 → 大云院</li>
-<li>原起寺 → 淳化寺</li>
-<li>🏨 宿平顺</li></ul>
-    
+    <div class="day-header"><span class="day-label" style="color:#f39c12">D2</span><span class="day-header-meta"><span class="day-date">🚗 16km·0h27</span><span class="day-pace day-pace-easy">轻松 · 3h15</span></span></div>
+    <div class="day-route"><span class="day-route-path">长治市区</span><span class="day-route-separator"> · </span><span class="day-route-focus">明代悬塑</span></div>
+    <div class="timeline day-timeline"><div class="tl-row"><span class="tl-time">09:00</span><span class="tl-action">从酒店出发前往观音堂</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">预计1小时</span><span class="tl-action">长治观音堂：明代悬塑</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约15分钟</span><span class="tl-action">前往老城午餐区域</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约1小时</span><span class="tl-action">午餐与休息</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">预计45分钟</span><span class="tl-action">上党门与老城街巷散步</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约15分钟</span><span class="tl-action">返回酒店，预留下午休整</span></div></div>
     
   </div>
   <div class="day-card card-2">
-    <div class="day-header"><span class="day-label" style="color:#27ae60">6月10日（三）</span><span class="day-date">🚗 53km · 52min</span></div>
-    <div class="day-route"><span class="day-route-path">平顺 → 长治</span></div>
-    <ul class="day-items"><li>上午河谷扫尾或补觉</li>
-<li>观音堂 <span class="highlight">明代悬塑巅峰</span></li>
-<li>上党门（长治地标）</li>
-<li>🏨 长治精品酒店 · 🕌 铜锅街清真晚餐</li></ul>
-    
+    <div class="day-header"><span class="day-label" style="color:#27ae60">D3</span><span class="day-header-meta"><span class="day-date">🚗 71km·1h33</span><span class="day-pace day-pace-easy">轻松 · 5h20</span></span></div>
+    <div class="day-route"><span class="day-route-path">长治 → 长子 → 高平</span></div>
+    <div class="timeline day-timeline"><div class="tl-row"><span class="tl-time">08:30</span><span class="tl-action">长治退房，前往长子方向</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">预计1小时30分钟</span><span class="tl-action">抵达法兴寺，参观宋代彩塑</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约20分钟</span><span class="tl-action">法兴寺 → 崇庆寺</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">预计1小时</span><span class="tl-action">崇庆寺：宋代罗汉像</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约1小时</span><span class="tl-action">午餐与休息</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约1小时30分钟</span><span class="tl-action">前往高平市区并入住</span></div></div>
     
   </div>
   <div class="day-card card-3">
-    <div class="day-header"><span class="day-label" style="color:#00bcd4">6月11日（四）</span><span class="day-date">🚗 72km · 1.2h</span></div>
-    <div class="day-route"><span class="day-route-path">长治周边</span></div>
-    <ul class="day-items"><li>法兴寺 <span class="highlight">宋代十二圆觉彩塑</span></li>
-<li>崇庆寺 宋代罗汉像</li>
-<li>可选：金灯寺石窟（悬崖石窟）</li>
-<li>🏨 长治</li></ul>
-    
+    <div class="day-header"><span class="day-label" style="color:#00bcd4">D4</span><span class="day-header-meta"><span class="day-date">🚗 80km·2h2</span><span class="day-pace day-pace-easy">轻松 · 4h45</span></span></div>
+    <div class="day-route"><span class="day-route-path">高平</span><span class="day-route-separator"> · </span><span class="day-route-focus">壁画与早期民居</span></div>
+    <div class="timeline day-timeline"><div class="tl-row"><span class="tl-time">08:30</span><span class="tl-action">高平出发，前往开化寺</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">预计30分钟</span><span class="tl-action">抵达开化寺，参观北宋壁画</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约10分钟</span><span class="tl-action">开化寺 → 姬氏民居</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">预计45分钟</span><span class="tl-action">姬氏民居：早期民居木构</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约1小时</span><span class="tl-action">午餐与休息</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约40分钟</span><span class="tl-action">前往崇明寺</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">预计1小时</span><span class="tl-action">崇明寺北宋大木作</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约40分钟</span><span class="tl-action">返回高平市区</span></div></div>
     
   </div>
   <div class="day-card card-4">
-    <div class="day-header"><span class="day-label" style="color:#3f51b5">6月12日（五）</span><span class="day-date">🚗 100km · 2h</span></div>
-    <div class="day-route"><span class="day-route-path">长治 → 高平</span></div>
-    <ul class="day-items"><li>开化寺 <span class="highlight">北宋壁画 88㎡</span></li>
-<li>崇明寺 北宋早期大木作</li>
-<li>姬氏民居 <span class="highlight">全国最早元代民居</span></li>
-<li>🏨 高平</li></ul>
-    
+    <div class="day-header"><span class="day-label" style="color:#3f51b5">D5</span><span class="day-header-meta"><span class="day-date">🚗 73km·1h26</span><span class="day-pace day-pace-easy">轻松 · 4h05</span></span></div>
+    <div class="day-route"><span class="day-route-path">高平 → 晋城</span><span class="day-route-separator"> · </span><span class="day-route-focus">宋塑与星宿</span></div>
+    <div class="timeline day-timeline"><div class="tl-row"><span class="tl-time">08:30</span><span class="tl-action">高平退房，前往府城玉皇庙</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">预计1小时</span><span class="tl-action">抵达玉皇庙，参观二十八星宿彩塑</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约20分钟</span><span class="tl-action">前往青莲寺</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">预计1小时</span><span class="tl-action">青莲寺古建与彩塑</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约1小时</span><span class="tl-action">午餐与休息</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约45分钟</span><span class="tl-action">前往晋城市区并入住</span></div></div>
     
   </div>
   <div class="day-card card-5">
-    <div class="day-header"><span class="day-label" style="color:#9c27b0">6月13日（六）</span><span class="day-date">🚗 107km · 2h</span></div>
-    <div class="day-route"><span class="day-route-path">高平 → 晋城</span><span class="day-route-separator"> · </span><span class="day-route-focus">皇城相府</span></div>
-    <ul class="day-items"><li>玉皇庙 <span class="highlight">⭐⭐ 二十八星宿彩塑</span></li>
-<li>青莲寺 唐代彩塑</li>
-<li>下午：皇城相府（清代相府）</li>
-<li>🏨 宿皇城相府/阳城县</li></ul>
-    
-    
+    <div class="day-header"><span class="day-label" style="color:#9c27b0">D6</span><span class="day-header-meta"><span class="day-date">🚗 246km·4h57</span><span class="day-pace day-pace-tight">偏紧 · 7h45</span></span></div>
+    <div class="day-route"><span class="day-route-path">晋城 → 浊漳河谷</span></div>
+    <div class="timeline day-timeline"><div class="tl-row"><span class="tl-time">07:30</span><span class="tl-action">晋城出发，北上浊漳河谷</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约2小时30分钟</span><span class="tl-action">车程前往河谷，途中休息与换驾</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">预计35分钟</span><span class="tl-action">原起寺：宋塔与河谷</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">预计30分钟</span><span class="tl-action">大云院：五代壁画</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约20分钟</span><span class="tl-action">前往天台庵</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">预计40分钟</span><span class="tl-action">天台庵：五代木构</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">预计1小时</span><span class="tl-action">龙门寺：六朝木构于一寺</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约1小时</span><span class="tl-action">午餐与休息</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">预计30分钟</span><span class="tl-action">淳化寺：金代大殿</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约40分钟</span><span class="tl-action">前往平顺县城并入住</span></div></div>
+    <div class="day-alert-list"><div class="tl-alert-row"><span class="tl-alert-label">提醒</span><span>⏱ D6 晋城 → 浊漳河谷: 当日计划约 7h45，强度偏紧</span></div></div>
   </div>
   <div class="day-card card-6">
-    <div class="day-header"><span class="day-label" style="color:#e91e63">6月14日（日）</span><span class="day-date">🚗 79→752km · 8.5h</span></div>
-    <div class="day-route"><span class="day-route-path">湘峪古堡 → 🏠 北京</span></div>
-    <ul class="day-items"><li>早：湘峪古堡 <span class="highlight">明代藏兵城堡</span></li>
-<li>🚗 7h 一路北上回北京</li>
-<li>预计晚 7-8 点到家</li></ul>
-    
-    
+    <div class="day-header"><span class="day-label" style="color:#e91e63">D7</span><span class="day-header-meta"><span class="day-date">🚗 626km·9h39</span><span class="day-pace day-pace-tight">偏紧 · 8h</span></span></div>
+    <div class="day-route"><span class="day-route-path">平顺 → 邯郸 → 北京</span></div>
+    <div class="timeline day-timeline"><div class="tl-row"><span class="tl-time">07:00</span><span class="tl-action">平顺出发，经高速返回北京</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约3小时30分钟</span><span class="tl-action">高速行驶，服务区休息与换驾</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约1小时</span><span class="tl-action">午餐与补给</span></div>
+<div class="tl-row"><span class="tl-time tl-duration">约3小时30分钟</span><span class="tl-action">继续返京，按拥堵情况调整休息</span></div>
+<div class="tl-row"><span class="tl-time">下午</span><span class="tl-action">抵达北京，结束行程</span></div></div>
+    <div class="day-alert-list"><div class="tl-alert-row"><span class="tl-alert-label">提醒</span><span>🌅 D7 由西向东 — 早晨 07:00-09:00 迎光驾驶，注意遮阳</span></div><div class="tl-alert-row"><span class="tl-alert-label">提醒</span><span>⏱ D7 平顺 → 邯郸 → 北京: 当日计划约 8h，强度偏紧</span></div></div>
   </div>
 </div>
 
-<div class="footer">Tumu Roadbook v0.1.8 · YAML 驱动的自驾路线图</div>
+<div class="footer">Tumu Roadbook v0.2.0 · YAML 驱动的自驾路线图</div>
 </div>
 
 <script>/* @preserve
@@ -961,34 +988,34 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 //# sourceMappingURL=leaflet.js.map</script>
 <script>
 // ═══════════════════ Route Data ═══════════════════
-var r_1 = [[39.904421, 116.407381], [39.841286, 116.206], [39.733836, 116.109346], [39.429786, 116.01207], [39.112146, 115.733985], [38.787533, 115.53757], [38.740877, 115.467949], [38.72566, 115.325382], [38.574181, 115.081315], [38.461817, 114.983393], [38.437994, 114.866663], [38.348892, 114.73284], [38.162897, 114.588617], [38.043533, 114.570485], [38.042377, 114.514906], [37.953684, 114.502963], [37.799258, 114.314401], [37.348545, 114.319193], [37.148889, 114.235243], [37.101399, 114.256661], [36.905954, 114.16474], [36.714097, 113.949857], [36.567318, 113.847317], [36.367224, 113.869608], [36.300155, 113.797263], [36.24648, 113.833275], [36.252703, 113.674534], [36.209205, 113.596976], [36.186386, 113.388983], [36.200151, 113.439324]];
-var r_2 = [[36.200151, 113.439324], [36.20103, 113.436272], [36.186691, 113.404105], [36.184584, 113.385187], [36.190195, 113.374759], [36.192028, 113.35812], [36.199701, 113.329029], [36.209872, 113.314021], [36.207072, 113.300432], [36.211013, 113.293071], [36.215526, 113.274875], [36.22761, 113.257652], [36.238766, 113.253886], [36.242886, 113.233014], [36.247409, 113.227979], [36.250131, 113.213173], [36.245628, 113.174925], [36.238698, 113.163008], [36.239285, 113.156453], [36.221685, 113.148754], [36.2327, 113.091237], [36.222807, 113.087779], [36.225667, 113.075243], [36.227211, 113.076633], [36.225582, 113.075193], [36.222719, 113.087768], [36.21115, 113.085314], [36.203137, 113.118049], [36.192011, 113.113429], [36.191115, 113.116061]];
-var r_3 = [[36.191115, 113.116061], [36.180245, 113.111812], [36.182607, 113.10377], [36.162383, 113.09643], [36.167927, 113.078938], [36.145501, 113.068501], [36.122789, 113.038662], [36.021041, 113.036818], [36.00352, 113.03417], [35.974638, 113.01292], [35.934791, 113.017165], [35.921939, 113.006486], [35.908893, 113.003691], [35.874724, 112.971871], [35.8522, 112.968219], [35.816455, 112.952254], [35.799105, 112.9385], [35.800061, 112.929197]];
-var r_4 = [[35.800061, 112.929197], [35.802274, 112.929544], [35.80222, 112.937939], [35.770086, 112.944487], [35.768016, 112.951856], [35.740023, 112.968442], [35.729274, 112.968851], [35.703595, 112.962672], [35.6746, 112.966258], [35.6465, 112.96225], [35.644444, 112.939283], [35.637877, 112.918231], [35.636325, 112.898057], [35.623575, 112.871334], [35.624189, 112.847998], [35.612721, 112.830817], [35.605146, 112.812053], [35.58159, 112.800334], [35.553822, 112.794241], [35.537668, 112.79545], [35.521078, 112.786041], [35.509345, 112.785871], [35.49717, 112.777749], [35.480505, 112.778465], [35.484698, 112.726107], [35.481697, 112.680844], [35.490647, 112.65849], [35.4936, 112.643003], [35.492169, 112.636254], [35.483082, 112.619608], [35.485814, 112.604488], [35.486137, 112.579946], [35.488599, 112.569986], [35.492621, 112.569839], [35.498111, 112.56512], [35.509136, 112.575059], [35.517418, 112.578617], [35.515601, 112.578472]];
-var r_5 = [[35.677197, 112.183478], [35.646478, 112.30964], [35.532077, 112.396001], [35.463945, 112.881912], [35.516197, 112.928686], [35.814203, 112.953821], [36.010571, 113.040355], [36.016008, 113.106391], [36.114224, 113.25047], [36.312944, 113.310991], [36.339159, 113.287028], [36.519999, 113.407981], [36.53079, 113.633728], [36.661982, 113.794937], [36.632324, 114.021255], [36.717996, 114.031224], [36.740579, 113.995403], [36.939456, 114.186133], [37.29333, 114.313232], [37.799851, 114.314809], [37.954511, 114.480699], [37.959625, 114.582636], [38.160266, 114.587773], [38.295709, 114.673869], [38.436974, 114.865024], [38.462788, 114.985233], [38.67302, 115.232282], [38.78744, 115.537758], [39.112041, 115.734144], [39.429742, 116.012171], [39.733717, 116.109563], [39.8416, 116.207009], [39.904421, 116.407381]];
-var sr_1 = [[36.366631, 113.438789], [36.364579, 113.43844], [36.362688, 113.433958], [36.35521, 113.438813], [36.351835, 113.437699], [36.352895, 113.428729], [36.360131, 113.426016], [36.361215, 113.42027], [36.362536, 113.419091], [36.361941, 113.416196], [36.366381, 113.409353], [36.372514, 113.404215], [36.374818, 113.400256], [36.383482, 113.398517], [36.384807, 113.395811], [36.380839, 113.390366], [36.371307, 113.395822], [36.368713, 113.398762], [36.364602, 113.409894], [36.361132, 113.413752], [36.361235, 113.417869], [36.357723, 113.41832], [36.35741, 113.42365], [36.35534, 113.425683], [36.353322, 113.424888], [36.353157, 113.425796], [36.353543, 113.424888], [36.354254, 113.425895], [36.352195, 113.427813], [36.353297, 113.429715], [36.35152, 113.437367], [36.354362, 113.43888], [36.362527, 113.438127], [36.36436, 113.440297], [36.36481, 113.443833], [36.354381, 113.455821], [36.356264, 113.474918], [36.359764, 113.480365], [36.358053, 113.488626], [36.347972, 113.493434], [36.346415, 113.497259], [36.348777, 113.502579], [36.351561, 113.502875], [36.354756, 113.50057], [36.363893, 113.505226], [36.362988, 113.51017], [36.357066, 113.515382], [36.354924, 113.520042], [36.355159, 113.52256], [36.358173, 113.523913], [36.361532, 113.527725], [36.36371, 113.532332], [36.359743, 113.538499], [36.360469, 113.54436], [36.354776, 113.552549], [36.356486, 113.554019], [36.360003, 113.553179], [36.366334, 113.555319], [36.368229, 113.559088], [36.369326, 113.56732], [36.368105, 113.574008], [36.365454, 113.578491], [36.356004, 113.582778], [36.352578, 113.586301], [36.356624, 113.598201], [36.35509, 113.603608], [36.350956, 113.610344], [36.351096, 113.614939], [36.35336, 113.617168], [36.36004, 113.617658], [36.36317, 113.620464], [36.364492, 113.625053], [36.3631, 113.634433], [36.366267, 113.637046], [36.366172, 113.638415], [36.369975, 113.637264], [36.37429, 113.629266], [36.37789, 113.62555], [36.38228, 113.625137], [36.384832, 113.621919], [36.387715, 113.623552], [36.389661, 113.622567]];
-var sr_2 = [[36.191, 113.116], [36.191, 113.116]];
+var r_1 = [[39.904421, 116.407381], [39.841286, 116.206], [39.733836, 116.109346], [39.429786, 116.01207], [39.112146, 115.733985], [38.787533, 115.53757], [38.740877, 115.467949], [38.72566, 115.325382], [38.574181, 115.081315], [38.462333, 114.984197], [38.437994, 114.866663], [38.35608, 114.756522], [38.036363, 114.776793], [37.853006, 114.744474], [37.687293, 114.635076], [36.625616, 114.539107], [36.657816, 114.378585], [36.584412, 114.320304], [36.563877, 114.078463], [36.645423, 113.821284], [36.568912, 113.757026], [36.578004, 113.709548], [36.526663, 113.635624], [36.531504, 113.385204], [36.446779, 113.271553], [36.191115, 113.116061]];
+var r_2 = [[36.191115, 113.116061], [36.180245, 113.111812], [36.182607, 113.10377], [36.162383, 113.09643], [36.167927, 113.078938], [36.145501, 113.068501], [36.103224, 113.014707], [36.080332, 112.997144], [36.078443, 112.990654], [36.061861, 112.984615], [36.059994, 112.97525], [36.018372, 112.935849], [35.987034, 112.916411], [35.980984, 112.90922], [35.983606, 112.906852], [35.982085, 112.913793], [35.974364, 112.916007], [35.966402, 112.939671], [35.967498, 112.957607], [35.980582, 112.960154], [35.984929, 112.965414], [35.970332, 112.972826], [35.973837, 113.01277], [35.935605, 113.017406], [35.921939, 113.006486], [35.908893, 113.003691], [35.874724, 112.971871], [35.8522, 112.968219], [35.816455, 112.952254], [35.799105, 112.9385], [35.800061, 112.929197]];
+var r_3 = [[35.800061, 112.929197], [35.802274, 112.929544], [35.80222, 112.937939], [35.770086, 112.944487], [35.768016, 112.951856], [35.746365, 112.96605], [35.734198, 112.969179], [35.703595, 112.962672], [35.6746, 112.966258], [35.652741, 112.96434], [35.641894, 112.960383], [35.625174, 112.94924], [35.610386, 112.944197], [35.583387, 112.942932], [35.565483, 112.935357], [35.547885, 112.933676], [35.536736, 112.928715], [35.539474, 112.932863], [35.546949, 112.935741], [35.549173, 112.936324], [35.539474, 112.932863], [35.536788, 112.928788], [35.539215, 112.92868], [35.539517, 112.931086], [35.522106, 112.92969], [35.508671, 112.925637], [35.496471, 112.918361], [35.480377, 112.901358], [35.478283, 112.928906], [35.481169, 112.941394], [35.472752, 112.978544], [35.472003, 112.990739], [35.473806, 112.994423], [35.467136, 112.992323], [35.459091, 112.999664], [35.458632, 112.989942], [35.459091, 112.999664], [35.467136, 112.992323], [35.474262, 112.994464], [35.472637, 112.979963], [35.48125, 112.941402], [35.478382, 112.929446], [35.479557, 112.908916], [35.490133, 112.881149], [35.490752, 112.845454]];
+var r_4 = [[35.490752, 112.845454], [35.507848, 112.847595], [35.518682, 112.894609], [35.527735, 112.897572], [35.541698, 112.933522], [35.60916, 112.944002], [35.657428, 112.96525], [35.735127, 112.969284], [35.768617, 112.952257], [35.814203, 112.953821], [35.967923, 113.03438], [36.011098, 113.040629], [36.016008, 113.106391], [36.056302, 113.184176], [36.09365, 113.21351], [36.114224, 113.25047], [36.178379, 113.274963], [36.236573, 113.277875], [36.27388, 113.302364], [36.312944, 113.310991], [36.339159, 113.287028], [36.305208, 113.357738], [36.340254, 113.37856], [36.352343, 113.400305], [36.353157, 113.425796], [36.351701, 113.43758], [36.366631, 113.438789], [36.351835, 113.437699], [36.352195, 113.427813], [36.371307, 113.395822], [36.380839, 113.390366], [36.383482, 113.398517], [36.352895, 113.428729], [36.35161, 113.437486], [36.36481, 113.443833], [36.354381, 113.455821], [36.358053, 113.488626], [36.346415, 113.497259], [36.363893, 113.505226], [36.354924, 113.520042], [36.36371, 113.532332], [36.354776, 113.552549], [36.369314, 113.566736], [36.352533, 113.585454], [36.351096, 113.614939], [36.36317, 113.620464], [36.366172, 113.638415], [36.389661, 113.622567], [36.366172, 113.638415], [36.36317, 113.620464], [36.351096, 113.614939], [36.352578, 113.586301], [36.369287, 113.567878], [36.366334, 113.555319], [36.354776, 113.552549], [36.36371, 113.532332], [36.354924, 113.520042], [36.363893, 113.505226], [36.346415, 113.497259], [36.358053, 113.488626], [36.354381, 113.455821], [36.36481, 113.443308], [36.351447, 113.437247], [36.352343, 113.400305], [36.339622, 113.377856], [36.327524, 113.367766], [36.318137, 113.372641], [36.292766, 113.41675], [36.232297, 113.439824], [36.200151, 113.439324]];
+var r_5 = [[36.200151, 113.439324], [36.186085, 113.38892], [36.258505, 113.78242], [36.050148, 113.924933], [36.100256, 114.181645], [36.176018, 114.220206], [36.199459, 114.343727], [36.418351, 114.348643], [36.625616, 114.539107], [37.687508, 114.635331], [37.851603, 114.74412], [38.035805, 114.776965], [38.356025, 114.756694], [38.437842, 114.866776], [38.462195, 114.984344], [38.571815, 115.078526], [38.724943, 115.324361], [38.740761, 115.467937], [38.78744, 115.537758], [39.112041, 115.734144], [39.429742, 116.012171], [39.733717, 116.109563], [39.8416, 116.207009], [39.904421, 116.407381]];
+var sr_1 = [[36.20026, 113.116097], [36.200034, 113.117286], [36.203223, 113.118201], [36.211235, 113.085459], [36.222776, 113.087913], [36.225667, 113.075243], [36.227328, 113.075907], [36.22721, 113.076639], [36.227137, 113.077088], [36.227328, 113.075907], [36.225582, 113.075193], [36.222719, 113.087768], [36.21115, 113.085314], [36.207549, 113.100011], [36.195069, 113.094995], [36.189609, 113.090857], [36.185611, 113.097617], [36.188646, 113.099063], [36.188413, 113.099719], [36.187978, 113.099631], [36.187452, 113.100571], [36.18686, 113.101575], [36.185894, 113.105217], [36.190282, 113.107152], [36.188788, 113.110869], [36.188404, 113.110956], [36.191039, 113.112897], [36.190306, 113.115148]];
+var sr_2 = [[35.80098, 112.931521], [35.798679, 112.93138], [35.799025, 112.938681], [35.802614, 112.939467], [35.816407, 112.952368], [35.830482, 112.956266], [35.852174, 112.968342], [35.87429, 112.971798], [35.887808, 112.984704], [35.88467, 112.987992], [35.886197, 112.992562], [35.884922, 112.99659], [35.887817, 113.00285], [35.884359, 113.003252], [35.885732, 113.005251], [35.883433, 113.017262], [35.875201, 113.018711], [35.867892, 113.023875], [35.862661, 113.021366], [35.860424, 113.024996], [35.859575, 113.030159], [35.864912, 113.03129], [35.868519, 113.036711], [35.863158, 113.030578], [35.854317, 113.032222], [35.850855, 113.045795], [35.853969, 113.054427], [35.862193, 113.058132], [35.863013, 113.061231], [35.866342, 113.060166], [35.863013, 113.061231], [35.862258, 113.058181], [35.853969, 113.054427], [35.85123, 113.043378], [35.844881, 113.033164], [35.829182, 113.0313], [35.817117, 113.019789], [35.783319, 113.001893], [35.777996, 112.991723], [35.768217, 112.984365], [35.767679, 112.95904], [35.775659, 112.943285], [35.705837, 112.958138], [35.707718, 112.973036], [35.701418, 113.000418], [35.694608, 113.014847], [35.710316, 113.014418], [35.714478, 113.008471], [35.710316, 113.014418], [35.694608, 113.014847], [35.701418, 113.000418], [35.707718, 112.973036], [35.705837, 112.958138], [35.799121, 112.938672], [35.798614, 112.929296], [35.800061, 112.929197]];
 var mainRoutes = [
-  ['#e74c3c', r_1],
-  ['#27ae60', r_2],
-  ['#3f51b5', r_3],
-  ['#9c27b0', r_4],
-  ['#e91e63', r_5],
+  ['#e74c3c', r_1, 'road'],
+  ['#27ae60', r_2, 'road'],
+  ['#3f51b5', r_3, 'road'],
+  ['#9c27b0', r_4, 'road'],
+  ['#e91e63', r_5, 'road'],
 ];
 var spurRoutes = [
-  ['#f39c12', sr_1],
-  ['#00bcd4', sr_2],
+  ['#f39c12', sr_1, 'road'],
+  ['#00bcd4', sr_2, 'road'],
 ];
-var cityPosData = [{"name": "北京", "lat": 39.9042, "lng": 116.4074, "color": "#e74c3c", "elevation": 51}, {"name": "平顺", "lat": 36.2, "lng": 113.439, "color": "#e74c3c", "elevation": 1077}, {"name": "长治", "lat": 36.191, "lng": 113.116, "color": "#27ae60", "elevation": 933}, {"name": "高平", "lat": 35.8, "lng": 112.93, "color": "#3f51b5", "elevation": 834}, {"name": "皇城相府", "lat": 35.5144, "lng": 112.5778, "color": "#9c27b0", "elevation": 649}];
-var dxData = [{"name": "D1", "lat": 37.953684, "lng": 114.502963, "color": "#e74c3c", "dist": "586km", "sub": ""}, {"name": "D2", "lat": 36.22, "lng": 113.439, "color": "#f39c12", "dist": "85km", "sub": "平顺全天"}, {"name": "D3", "lat": 36.250131, "lng": 113.213173, "color": "#27ae60", "dist": "53km", "sub": ""}, {"name": "D4", "lat": 36.211, "lng": 113.116, "color": "#00bcd4", "dist": "72km", "sub": "长治全天"}, {"name": "D5", "lat": 35.974638, "lng": 113.01292, "color": "#3f51b5", "dist": "100km", "sub": ""}, {"name": "D6", "lat": 35.537668, "lng": 112.79545, "color": "#9c27b0", "dist": "107km", "sub": ""}, {"name": "D7", "lat": 36.740579, "lng": 113.995403, "color": "#e91e63", "dist": "79→752km", "sub": ""}];
-var majorSpots = [[36.390227, 113.623042, "#8b6a4a", "龙门寺", 0, -20], [36.367072, 113.438718, "#8b6a4a", "大云院", 0, 18], [36.383242, 113.398436, "#8b6a4a", "天台庵", -14, 0], [36.227635, 113.076745, "#8b6a4a", "观音堂", 0, -20], [35.98056, 112.95972, "#8b6a4a", "崇庆寺", 0, 18], [36.098, 113.056, "#8b6a4a", "法兴寺", 0, -18], [35.838, 112.915, "#8b6a4a", "开化寺", 0, -20], [35.86583, 113.06333, "#8b6a4a", "姬氏民居", 0, 18], [35.488, 112.86, "#8b6a4a", "玉皇庙星宿彩塑", 0, -20], [35.45806, 112.98917, "#8b6a4a", "青莲寺", 0, 18], [35.672, 112.182, "#8b6a4a", "湘峪古堡", 0, -20]];
-var spots = [[36.353256, 113.586226, "淳化寺 · 金"], [36.353334, 113.425748, "原起寺 · 宋塔"], [35.71444, 113.00861, "崇明寺 · 北宋"]];
+var cityPosData = [{"name": "北京", "lat": 39.904421, "lng": 116.407381, "color": "#e74c3c", "elevation": 51}, {"name": "长治", "lat": 36.191115, "lng": 113.116061, "color": "#e74c3c", "elevation": 933}, {"name": "高平", "lat": 35.800061, "lng": 112.929197, "color": "#27ae60", "elevation": 834}, {"name": "晋城", "lat": 35.490752, "lng": 112.845454, "color": "#3f51b5", "elevation": 704}, {"name": "平顺", "lat": 36.200151, "lng": 113.439324, "color": "#9c27b0", "elevation": 1077}];
+var dxData = [{"name": "D1", "lat": 37.853006, "lng": 114.744474, "color": "#e74c3c", "dist": "616km", "sub": ""}, {"name": "D2", "lat": 36.211, "lng": 113.116, "color": "#f39c12", "dist": "16km", "sub": "长治全天"}, {"name": "D3", "lat": 35.982085, "lng": 112.913793, "color": "#27ae60", "dist": "71km", "sub": ""}, {"name": "D4", "lat": 35.82, "lng": 112.93, "color": "#00bcd4", "dist": "80km", "sub": "高平全天"}, {"name": "D5", "lat": 35.539215, "lng": 112.92868, "color": "#3f51b5", "dist": "73km", "sub": ""}, {"name": "D6", "lat": 36.354381, "lng": 113.455821, "color": "#9c27b0", "dist": "246km", "sub": ""}, {"name": "D7", "lat": 38.356025, "lng": 114.756694, "color": "#e91e63", "dist": "626km", "sub": ""}];
+var majorSpots = [[36.227635, 113.076745, "#8b6a4a", "长治观音堂", 0, -20], [36.187171, 113.100345, "#8b6a4a", "上党门", 0, -20], [35.984429, 112.906852, "#8b6a4a", "法兴寺", 0, -20], [35.98049, 112.959819, "#8b6a4a", "崇庆寺", 0, -20], [35.870328, 113.037205, "#8b6a4a", "开化寺", 0, -20], [35.866437, 113.060327, "#8b6a4a", "姬氏民居", 0, -20], [35.714485, 113.0087, "#8b6a4a", "崇明寺", 0, -20], [35.546756, 112.936879, "#8b6a4a", "府城玉皇庙", 0, -20], [35.458521, 112.989445, "#8b6a4a", "青莲寺", 0, -20], [36.383242, 113.398436, "#8b6a4a", "天台庵", 0, -20], [36.353334, 113.425748, "#8b6a4a", "原起寺", 0, -20], [36.353256, 113.586226, "#8b6a4a", "淳化寺", 0, -20], [36.390227, 113.623042, "#8b6a4a", "龙门寺", 0, -20], [36.367072, 113.438718, "#8b6a4a", "大云院", 0, -20]];
+var spots = [];
 // ═══════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════
 // map.js — 线段碰撞检测（路线用线段而非散点）
 // ═══════════════════════════════════════════════════
 
-var map = L.map('map', { center: [36.5414, 113.5454], zoom: 7, zoomControl: true, scrollWheelZoom: true, attributionControl: true });
+var map = L.map('map', { center: [36.6419, 113.6319], zoom: 7, zoomControl: true, scrollWheelZoom: true, attributionControl: true });
 window.routeMap = map;
 var tileAttribution = '&copy; <a href="https://www.esri.com/">Esri</a>';
 var standardTile = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', { attribution: tileAttribution, maxZoom: 20, className: 'tile-standard' });
@@ -1026,7 +1053,13 @@ function mw(txt, s) {
 
 // ── 路线（主路线 + 支线 + 端线段数据）──
 for (var i = 0; i < mainRoutes.length; i++)
-  L.polyline(mainRoutes[i][1], { color: mainRoutes[i][0], weight: 4, opacity: 0.85, smoothFactor: 1 }).addTo(map);
+  L.polyline(mainRoutes[i][1], {
+    color: mainRoutes[i][0],
+    weight: 4,
+    opacity: mainRoutes[i][2] === 'estimated' ? 0.65 : 0.85,
+    dashArray: mainRoutes[i][2] === 'estimated' ? '8,6' : null,
+    smoothFactor: 1
+  }).addTo(map);
 var spurLayer = L.layerGroup();
 
 // 预采样路线线段（每 5 个点取一段），用于像素碰撞
@@ -1222,6 +1255,7 @@ spots.forEach(function(s){ab.extend([s[0],s[1]]);});
 map.fitBounds(ab,{padding:[50,50]});
 var overviewBounds = map.getBounds();
 var focusCfg = null;
+var poiZoom = {"major": 10, "minor": 11};
 var focusActive = false;
 var focusBtn = document.getElementById('focus-btn');
 if (focusCfg && focusCfg.center && focusCfg.zoom) {
@@ -1301,12 +1335,21 @@ function u() {
   spurLayer.clearLayers();
   if (z>=10) {
     for (var i=0;i<spurRoutes.length;i++)
-      spurLayer.addLayer(L.polyline(spurRoutes[i][1],{color:spurRoutes[i][0],weight:3,opacity:0.6,smoothFactor:1}));
+      spurLayer.addLayer(L.polyline(spurRoutes[i][1],{
+        color: spurRoutes[i][0],
+        weight: 3,
+        opacity: spurRoutes[i][2] === 'estimated' ? 0.5 : 0.6,
+        dashArray: spurRoutes[i][2] === 'estimated' ? '7,5' : null,
+        smoothFactor: 1
+      }));
   }
-  if (z>=10&&!map.hasLayer(poiMajor)) map.addLayer(poiMajor);
-  else if (z<10&&map.hasLayer(poiMajor)) map.removeLayer(poiMajor);
-  if (z>=11&&!map.hasLayer(poiMinor)) map.addLayer(poiMinor);
-  else if (z<11&&map.hasLayer(poiMinor)) map.removeLayer(poiMinor);
+  var compactAdjust = map.getSize().x < 420 ? 1 : 0;
+  var majorMinZoom = poiZoom.major + compactAdjust;
+  var minorMinZoom = poiZoom.minor + compactAdjust;
+  if (z>=majorMinZoom&&!map.hasLayer(poiMajor)) map.addLayer(poiMajor);
+  else if (z<majorMinZoom&&map.hasLayer(poiMajor)) map.removeLayer(poiMajor);
+  if (z>=minorMinZoom&&!map.hasLayer(poiMinor)) map.addLayer(poiMinor);
+  else if (z<minorMinZoom&&map.hasLayer(poiMinor)) map.removeLayer(poiMinor);
   if (!map.hasLayer(spurLayer)) map.addLayer(spurLayer);
   
   if (map.hasLayer(dotLayer)){map.removeLayer(dotLayer);map.addLayer(dotLayer);}

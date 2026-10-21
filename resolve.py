@@ -30,6 +30,7 @@ from datetime import datetime, timedelta
 from collections import OrderedDict
 
 import yaml
+from jsonschema import Draft202012Validator, FormatChecker
 
 # ─────────────────────────────────────────────
 # 1. Geocoding（Nomatim → 缓存）
@@ -42,6 +43,7 @@ POI_VERIFY_CACHE_PATH = os.path.join(CACHE_DIR, 'poi_verification.json')
 OSRM_CACHE_DIR = os.path.join(CACHE_DIR, 'osrm')
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 RESOLVED_DIR = os.path.join(BASE_DIR, 'resolved')
+TRIP_SCHEMA_PATH = os.path.join(BASE_DIR, 'schema', 'trip.schema.json')
 
 os.makedirs(CACHE_DIR, exist_ok=True)
 os.makedirs(OSRM_CACHE_DIR, exist_ok=True)
@@ -69,6 +71,19 @@ def save_elev_cache():
 
 def save_poi_verify_cache():
     save_json_cache(POI_VERIFY_CACHE_PATH, _poi_verify_cache)
+
+def validate_trip_schema(data: dict) -> list[str]:
+    """使用 JSON Schema 校验 YAML 的结构、类型与枚举。"""
+    with open(TRIP_SCHEMA_PATH, 'r', encoding='utf-8') as f:
+        schema = json.load(f)
+    validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    errors = []
+    for error in sorted(validator.iter_errors(data), key=lambda item: list(item.absolute_path)):
+        path = '$'
+        for part in error.absolute_path:
+            path += f'[{part}]' if isinstance(part, int) else f'.{part}'
+        errors.append(f'{path}: {error.message}')
+    return errors
 
 def geocode(name: str, hint: str = '') -> list[float] | None:
     """查地名坐标，返回 [lat, lng] 或 None
@@ -196,6 +211,7 @@ def fetch_route(start: list, end: list, via: list | None = None) -> dict:
             "polyline": [[start[0], start[1]], [end[0], end[1]]],
             "distance_km": 0,
             "duration_min": 0,
+            "quality": "local",
         }
     
     # Check cache
@@ -205,6 +221,7 @@ def fetch_route(start: list, end: list, via: list | None = None) -> dict:
         with open(cache_path, 'r') as f:
             cached = json.load(f)
             print(f"  ✓ 缓存命中 ({len(cached['polyline'])} 点)")
+            cached.setdefault('quality', 'road')
             return cached
     
     # Rate limit
@@ -238,6 +255,7 @@ def fetch_route(start: list, end: list, via: list | None = None) -> dict:
             "polyline": polyline,
             "distance_km": distance_km,
             "duration_min": duration_min,
+            "quality": "road",
         }
         # Save cache
         with open(cache_path, 'w') as f:
@@ -267,6 +285,7 @@ def fetch_route(start: list, end: list, via: list | None = None) -> dict:
                 "polyline": polyline,
                 "distance_km": distance_km,
                 "duration_min": duration_min,
+            "quality": "road",
             }
             with open(cache_path, 'w') as f:
                 json.dump(result, f)
@@ -298,6 +317,7 @@ def _straight_line(start, end, via=None):
         "polyline": result,
         "distance_km": est_km,
         "duration_min": round(est_km * 1.2),  # rough: 1min per km
+        "quality": "estimated",
     }
 
 
@@ -330,6 +350,85 @@ def map_distance_label(distance_manual: str, distance_km: int) -> str:
     if distance_manual:
         return str(distance_manual).split('·', 1)[0].strip()
     return f'{distance_km}km' if distance_km and distance_km > 0 else ''
+
+def parse_timeline_minutes(item: dict) -> int:
+    """解析“预计时长”或旧格式中的起止时间范围。"""
+    duration = str(item.get('duration', '')).strip()
+    if duration:
+        hours = re.search(r'(\d+(?:\.\d+)?)小时', duration)
+        minutes = re.search(r'(\d+)分钟', duration)
+        return round((float(hours.group(1)) if hours else 0) * 60 + (int(minutes.group(1)) if minutes else 0))
+
+    time_value = str(item.get('time', '')).strip()
+    match = re.fullmatch(r'(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})', time_value)
+    if not match:
+        return 0
+    start = int(match.group(1)) * 60 + int(match.group(2))
+    end = int(match.group(3)) * 60 + int(match.group(4))
+    return end - start if end >= start else end + 24 * 60 - start
+
+def assess_day_load(
+    distance_km: int,
+    driving_minutes: int,
+    timeline: list[dict],
+    drivers: int,
+    terrain: str = 'highway',
+) -> dict:
+    """综合时间轴与里程，给出每日执行强度。"""
+    timeline_minutes = sum(parse_timeline_minutes(item) for item in timeline)
+    if timeline_minutes > 0:
+        total_minutes = timeline_minutes
+        basis = 'timeline'
+    else:
+        total_minutes = round(driving_minutes * 1.33) + 120
+        basis = 'estimated'
+
+    ceiling, _ = daily_ceiling(terrain, drivers)
+    if distance_km > ceiling:
+        status, tone = '不建议', 'avoid'
+    elif total_minutes > 660 or distance_km > ceiling * 0.65:
+        status, tone = '偏紧', 'tight'
+    elif total_minutes > 570:
+        status, tone = '偏紧', 'tight'
+    elif total_minutes > 420:
+        status, tone = '正常', 'normal'
+    else:
+        status, tone = '轻松', 'easy'
+    hours = total_minutes // 60
+    minutes = total_minutes % 60
+    duration_text = f'{hours}h{minutes:02d}' if minutes else f'{hours}h'
+    return {
+        'status': status,
+        'tone': tone,
+        'minutes': total_minutes,
+        'duration': duration_text,
+        'basis': basis,
+    }
+
+def calculate_poi_zoom(pois: list[dict], reference_width_px: int = 500) -> dict:
+    """按主要景点的空间跨度自动决定标签显示层级。"""
+    coords = []
+    for poi in pois:
+        if poi.get('rank') != 'major':
+            continue
+        if 'lat' in poi and 'lng' in poi:
+            coords.append([float(poi['lat']), float(poi['lng'])])
+        elif isinstance(poi.get('coord'), (list, tuple)) and len(poi['coord']) == 2:
+            coords.append([float(poi['coord'][0]), float(poi['coord'][1])])
+    if len(coords) < 2:
+        return {'major': 10, 'minor': 11}
+
+    center_lat = sum(point[0] for point in coords) / len(coords)
+    width_km = (max(point[1] for point in coords) - min(point[1] for point in coords)) * 111 * math.cos(math.radians(center_lat))
+    height_km = (max(point[0] for point in coords) - min(point[0] for point in coords)) * 111
+    extent_km = max(width_km, height_km)
+    target_span_km = max(50, min(240, extent_km * 0.35))
+    raw_zoom = math.log2(
+        156543.03392 * math.cos(math.radians(center_lat)) * reference_width_px
+        / (target_span_km * 1000)
+    )
+    major_zoom = max(7, min(11, round(raw_zoom)))
+    return {'major': major_zoom, 'minor': min(12, major_zoom + 1)}
 
 def day_theme_html(theme: str) -> str:
     """把路线与当天景点主题拆成不同语义的颜色层。"""
@@ -645,6 +744,37 @@ def batch_fetch_elevation(coords: list) -> dict:
     save_elev_cache()
     return result
 
+def sample_route_points(polyline: list, max_points: int = 16) -> list[list[float]]:
+    """均匀采样路线点，控制公共海拔接口请求体积。"""
+    if len(polyline) <= max_points:
+        return polyline
+    indices = {
+        round(index * (len(polyline) - 1) / (max_points - 1))
+        for index in range(max_points)
+    }
+    return [polyline[index] for index in sorted(indices)]
+
+def analyze_route_elevation(polyline: list) -> dict | None:
+    """采样路线并返回最高海拔点。"""
+    samples = sample_route_points(polyline)
+    if not samples:
+        return None
+    elevations = batch_fetch_elevation([(point[0], point[1]) for point in samples])
+    measured = []
+    for point in samples:
+        key = f"{round(point[0], 4)},{round(point[1], 4)}"
+        elevation = elevations.get(key)
+        if elevation is not None:
+            measured.append((elevation, point))
+    if not measured:
+        return None
+    elevation, point = max(measured, key=lambda item: item[0])
+    return {
+        'elevation': int(elevation),
+        'lat': round(point[0], 6),
+        'lng': round(point[1], 6),
+    }
+
 def _batch_elevation(coords: list) -> dict:
     """向 Open-Elevation 发起批量查询，管道分隔"""
     if not coords:
@@ -698,6 +828,13 @@ def resolve(yaml_path: str, output_path: str | None = None):
     with open(yaml_path, 'r', encoding='utf-8') as f:
         data = yaml.safe_load(f.read()) or {}
 
+    schema_errors = validate_trip_schema(data)
+    if schema_errors:
+        print("❌ JSON Schema 校验失败:")
+        for error in schema_errors:
+            print(f"  - {error}")
+        sys.exit(1)
+
     validation_errors = validate_trip_data(data)
     if validation_errors:
         print("❌ YAML 校验失败:")
@@ -718,6 +855,11 @@ def resolve(yaml_path: str, output_path: str | None = None):
     driver_count = trip_meta.get('drivers', 1)
     strict_coordinates = trip_meta.get('coordinate_verification') == 'strict'
     timeline_mode = trip_meta.get('timeline_mode', 'split')
+    poi_zoom = calculate_poi_zoom(pois_yaml)
+    poi_zoom_override = trip_meta.get('poi_zoom')
+    if isinstance(poi_zoom_override, dict):
+        poi_zoom['major'] = int(poi_zoom_override.get('major', poi_zoom['major']))
+        poi_zoom['minor'] = int(poi_zoom_override.get('minor', poi_zoom['minor']))
     start_date_str = trip_meta.get('start_date', '')
 
     if strict_coordinates:
@@ -842,6 +984,7 @@ def resolve(yaml_path: str, output_path: str | None = None):
     main_routes = []
     spur_routes = []
     dx_data = []
+    route_peaks = []
     sidebar_items = []
     day_card_items = []
     timelines = []  # 微观执行日志
@@ -857,6 +1000,7 @@ def resolve(yaml_path: str, output_path: str | None = None):
         stop_tags = day.get('stop_tags', [])
         tips = day.get('tips', [])
         distance_manual = day.get('distance', '')
+        day_warnings = []
         
         # 获取城市海拔
         city_elev = None
@@ -896,7 +1040,9 @@ def resolve(yaml_path: str, output_path: str | None = None):
         day['_drivers'] = driver_count
         
         # Validate coordinates
-        all_warnings.extend(validate_route(start, end, via))
+        route_warnings = validate_route(start, end, via)
+        day_warnings.extend(route_warnings)
+        all_warnings.extend(route_warnings)
         
         # Store resolved coords in day for validation
         day['_resolved_start'] = start
@@ -911,6 +1057,7 @@ def resolve(yaml_path: str, output_path: str | None = None):
             polyline = route_result['polyline']
             distance_km = route_result['distance_km']
             duration_min = route_result['duration_min']
+            route_quality = route_result.get('quality', 'road')
             day['_resolved_distance'] = distance_km
             day['_resolved_duration'] = duration_min
             # 用 OSRM polyline 端点覆盖入参坐标（OSRM 会 snap 到公路）
@@ -920,16 +1067,34 @@ def resolve(yaml_path: str, output_path: str | None = None):
             polyline = [[0,0],[0,0]]
             distance_km = 0
             duration_min = 0
+            route_quality = 'estimated'
             day['_resolved_distance'] = 0
             day['_resolved_duration'] = 0
+
+        if route_quality == 'estimated':
+            route_warning = f"🧭 D{d} {theme}: 无法取得真实公路轨迹，地图显示为直线近似"
+            day_warnings.append(route_warning)
+            all_warnings.append(route_warning)
         
         if len(polyline) < 2:
             polyline = [start or [0,0], end or [0,0]]
+
+        route_peak = analyze_route_elevation(polyline) if distance_km > 0 else None
+        day['_route_peak'] = route_peak
+        if route_peak:
+            route_peaks.append({'day': d, **route_peak})
+        if route_peak and route_peak['elevation'] >= 3500:
+            peak_warning = (
+                f"⛰️ D{d} {theme}: 路线经过高海拔路段，"
+                f"采样最高点约 {route_peak['elevation']}m"
+            )
+            day_warnings.append(peak_warning)
+            all_warnings.append(peak_warning)
         
         if route_class == 'main':
-            main_routes.append({"day": d, "color": color, "polyline": polyline})
+            main_routes.append({"day": d, "color": color, "polyline": polyline, "quality": route_quality})
         else:
-            spur_routes.append({"day": d, "color": color, "polyline": polyline})
+            spur_routes.append({"day": d, "color": color, "polyline": polyline, "quality": route_quality})
         
         # Dx position — 优先用 OSRM 路线中点（保证在路线上）
         if day_type == 'local' and city and city in city_name_to_coord:
@@ -976,11 +1141,32 @@ def resolve(yaml_path: str, output_path: str | None = None):
         })
         
         # Validation
-        all_warnings.extend(validate_daily(day, idx, day_colors, days_data[:idx+1], city_name_to_coord))
+        daily_warnings = validate_daily(day, idx, day_colors, days_data[:idx+1], city_name_to_coord)
+        day_warnings.extend(daily_warnings)
+        all_warnings.extend(daily_warnings)
+
+        feasibility = assess_day_load(
+            distance_km,
+            duration_min,
+            day.get('timeline', []),
+            driver_count,
+            day.get('route', {}).get('terrain', 'highway'),
+        )
+        day['_feasibility'] = feasibility
+        if feasibility['tone'] in ('tight', 'avoid'):
+            suffix = '，按时间轴为粗略估算' if feasibility['basis'] == 'estimated' else ''
+            pace_warning = f"⏱ D{d} {theme}: 当日计划约 {feasibility['duration']}，强度{feasibility['status']}{suffix}"
+            day_warnings.append(pace_warning)
+            all_warnings.append(pace_warning)
         
         # Sidebar HTML
         day_label = day.get('label', '')
         tag_htmls = []
+        pace_icon = {'easy': '🟢', 'normal': '🔵', 'tight': '🟠', 'avoid': '🔴'}[feasibility['tone']]
+        tag_htmls.append(
+            f'<span class="tag tag-pace tag-pace-{feasibility["tone"]}">'
+            f'{pace_icon} {feasibility["status"]} · {feasibility["duration"]}</span>'
+        )
         for t in stop_tags[:5]:
             tcls = ''
             if '🕌' in t:
@@ -1006,6 +1192,8 @@ def resolve(yaml_path: str, output_path: str | None = None):
         elev_tag = ''
         if city_elev and city_elev > 2000:
             elev_tag = f'<span class="tag tag-elev">🏔️{city_elev}m</span>'
+        if route_peak and route_peak['elevation'] >= 3500:
+            elev_tag += f'<span class="tag tag-elev">⛰️路线最高 {route_peak["elevation"]}m</span>'
         
         # 计算当天日期
         if start_date:
@@ -1026,7 +1214,14 @@ def resolve(yaml_path: str, output_path: str | None = None):
         
         # Day card HTML
         items_html = '\n'.join(f'<li>{item}</li>' for item in items)
-        
+        warning_rows_html = ''.join(
+            f'<div class="tl-alert-row"><span class="tl-alert-label">提醒</span><span>{warning}</span></div>'
+            for warning in day_warnings
+        )
+        warning_list_html = (
+            f'<div class="day-alert-list">{warning_rows_html}</div>'
+            if warning_rows_html else ''
+        )
         # 摆渡车备注
         shuttle_note = ''
         if day_shuttle_notes:
@@ -1061,13 +1256,16 @@ def resolve(yaml_path: str, output_path: str | None = None):
       {tl_items}
     </div>
   </div>'''
+
+        card_tail_html = '\n'.join(
+            part for part in (shuttle_note, timeline_html, warning_list_html) if part
+        )
         
         day_card_items.append(f'''  <div class="day-card card-{idx}">
-    <div class="day-header"><span class="day-label" style="color:{color}">{day_label}{' · ' + date_str if date_str else ''}</span><span class="day-date">{disttime}</span></div>
+    <div class="day-header"><span class="day-label" style="color:{color}">{day_label}{' · ' + date_str if date_str else ''}</span><span class="day-header-meta"><span class="day-date">{disttime}</span><span class="day-pace day-pace-{feasibility['tone']}">{feasibility['status']} · {feasibility['duration']}</span></span></div>
     <div class="day-route">{theme_html}</div>
     {body_html}
-    {shuttle_note}
-    {timeline_html}
+    {card_tail_html}
   </div>''')
     
     # ── 城市坐标同步到路线端点 ──
@@ -1166,10 +1364,8 @@ def resolve(yaml_path: str, output_path: str | None = None):
 </div>'''
     
     # ── 5i. Warnings HTML ──
+    # 风险已经归入对应日期的时间轴，全局数据仅保留在 resolved JSON。
     warnings_html = ''
-    if all_warnings:
-        w_lines = '\n'.join(f'    <div style="padding:6px 12px;background:#fff6e5;border-left:3px solid #e8a838;margin:0 0 4px 0;font-size:13px;color:#7a5a20;">{w}</div>' for w in all_warnings)
-        warnings_html = f'<div style="margin-bottom:24px;">\n{w_lines}\n</div>'
     
     # ── 5j. Legend HTML ──
     legend_html = '\n    '.join(f'<span class="legend-item"><span class="legend-line" style="background:{day_colors[i]}"></span>D{i+1}</span>' for i in range(N))
@@ -1206,6 +1402,7 @@ def resolve(yaml_path: str, output_path: str | None = None):
             "spur": spur_routes,
         },
         "dx_data": dx_data,
+        "route_peaks": route_peaks,
         "sidebar": sidebar_items,
         "day_cards": day_card_items,
         "timelines": timelines,
@@ -1216,6 +1413,7 @@ def resolve(yaml_path: str, output_path: str | None = None):
         "stop_css": stop_css,
         "tile_url": tile_url,
         "center": {"lat": center_lat, "lng": center_lng},
+        "poi_zoom": poi_zoom,
         "day_colors": day_colors,
     }
     
