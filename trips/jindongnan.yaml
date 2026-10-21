@@ -5,6 +5,7 @@ trip:
   subtitle: 北京出发 · 浊漳河谷 · 长治 · 高平 · 晋城 · 七日古建巡礼
   dates: 6月8日 — 6月14日
   basemap: light
+  drivers: 2
   stats:
     days: 7
     distance: "~2,200"
@@ -28,23 +29,23 @@ cities:
 
 pois:
   - name: 龙门寺
-    lat: 36.39028
-    lng: 113.62278
+    lat: 36.390227
+    lng: 113.623042
     rank: major
     iconAnchor: [0, -20]
   - name: 大云院
-    lat: 36.20200
-    lng: 113.57400
+    lat: 36.367072
+    lng: 113.438718
     rank: major
     iconAnchor: [0, 18]
   - name: 天台庵
-    lat: 36.38306
-    lng: 113.39861
+    lat: 36.383242
+    lng: 113.398436
     rank: major
     iconAnchor: [-14, 0]
   - name: 观音堂
-    lat: 36.19500
-    lng: 113.11500
+    lat: 36.227635
+    lng: 113.076745
     rank: major
     iconAnchor: [0, -20]
   - name: 崇庆寺
@@ -83,12 +84,12 @@ pois:
     rank: major
     iconAnchor: [0, -20]
   - name: 淳化寺 · 金
-    lat: 36.35444
-    lng: 113.58944
+    lat: 36.353256
+    lng: 113.586226
     rank: minor
   - name: 原起寺 · 宋塔
-    lat: 36.35333
-    lng: 113.42583
+    lat: 36.353334
+    lng: 113.425748
     rank: minor
   - name: 崇明寺 · 北宋
     lat: 35.71444
@@ -123,10 +124,10 @@ days:
       - "🌅 上午看古建光线最好，下午背光"
     pois:
       - name: 龙门寺
-        coord: [36.39028, 113.62278]
+        coord: [36.390227, 113.623042]
         rank: major
       - name: 淳化寺 · 金
-        coord: [36.35444, 113.58944]
+        coord: [36.353256, 113.586226]
         rank: minor
 
   - day: 2
@@ -137,9 +138,9 @@ days:
     distance: "85km · 1.5h"
     route_class: spur
     route:
-      start: [36.2020, 113.5740]
-      via: [[36.39028, 113.62278], [36.38306, 113.39861]]
-      end: [36.3533, 113.4258]
+      start: [36.367072, 113.438718]
+      via: [[36.383242, 113.398436], [36.353334, 113.425748], [36.353256, 113.586226]]
+      end: [36.390227, 113.623042]
     items:
       - "龙门寺 → 天台庵 → 大云院"
       - "原起寺 → 淳化寺"
@@ -155,13 +156,13 @@ days:
       - "🌧️ 河谷山路雨后易滑，注意安全"
     pois:
       - name: 大云院
-        coord: [36.20200, 113.57400]
+        coord: [36.367072, 113.438718]
         rank: major
       - name: 天台庵
-        coord: [36.38306, 113.39861]
+        coord: [36.383242, 113.398436]
         rank: major
       - name: 原起寺 · 宋塔
-        coord: [36.35333, 113.42583]
+        coord: [36.353334, 113.425748]
         rank: minor
 
   - day: 3
@@ -173,6 +174,7 @@ days:
     route_class: main
     route:
       start: [36.2000, 113.4390]
+      via: [[36.227635, 113.076745]]
       end: [36.1910, 113.1160]
     items:
       - "上午河谷扫尾或补觉"
@@ -185,7 +187,7 @@ days:
       - "🕌 铜锅街清真晚餐"
     pois:
       - name: 观音堂
-        coord: [36.19500, 113.11500]
+        coord: [36.227635, 113.076745]
         rank: major
 
   - day: 4

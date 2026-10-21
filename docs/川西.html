@@ -688,12 +688,33 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 .stat-card .num { font-size: 24px; font-weight: 700; color: #3d3929; }
 .stat-card .label { font-size: 12px; color: #a0987a; margin-top: 4px; }
 
-.map-section { position: relative; background: #fff; border: 1px solid #f0ede6; border-radius: 16px; margin-bottom: 36px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
-.legend { display: flex; gap: 10px; padding: 8px 16px; background: #faf8f5; border-bottom: 1px solid #f0ede6; font-size: 11px; color: #7a7258; flex-wrap: wrap; align-items: center; }
-.legend-item { display: flex; align-items: center; gap: 4px; }
-.legend-line { width: 20px; height: 3px; border-radius: 2px; }
-#map { height: 500px; width: 100%; background: #faf8f5; border-radius: 0; }
-#layer-switch { position: absolute; top: 4.5em; right: 12px; z-index: 1000; display: flex; gap: 0; background: rgba(255,255,255,0.92); border: 1px solid #f0ede6; border-radius: 8px; overflow: hidden; backdrop-filter: blur(8px); }
+.map-section { position: relative; background: #fff; border: 1px solid #f0ede6; border-radius: 16px; margin-bottom: 36px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.04); transition: all .3s ease; }
+.map-section.fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; border-radius: 0; margin: 0; border: none; }
+.map-section.fullscreen #map { height: 100vh !important; border-radius: 0; }
+#map { height: 500px; width: 100%; background: #f7f5f0; border-radius: 0; }
+#map .tile-standard { filter: saturate(0.25) contrast(0.9) brightness(1.03); }
+#map .tile-transport { filter: grayscale(1) contrast(0.72) brightness(1.04); }
+.leaflet-tooltip.poi-tooltip {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #8b5e3c;
+  font: 700 12px/1.3 'Noto Sans SC', system-ui, sans-serif;
+  white-space: nowrap;
+  text-shadow: 0 0 3px #fff, 0 0 6px #fff, 0 0 9px #fff;
+}
+.leaflet-tooltip.poi-tooltip::before { display: none; }
+.leaflet-tooltip.poi-tooltip-minor { color: #3d7a4a; font-size: 11px; }
+#fullscreen-btn { position: absolute; top: 12px; right: 12px; z-index: 1001; width: 36px; height: 36px; border-radius: 8px; border: 1px solid #f0ede6; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: #7a7258; transition: all .15s; user-select: none; }
+#fullscreen-btn:hover { background: #efece4; color: #3d3929; }
+.map-section.fullscreen #fullscreen-btn { position: fixed; top: 16px; right: 16px; z-index: 10000; }
+#focus-btn { display: none; position: absolute; top: 56px; right: 12px; z-index: 1001; border: 1px solid #f0ede6; border-radius: 8px; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); cursor: pointer; padding: 7px 10px; color: #7a7258; font: 600 12px/1 'Noto Sans SC', system-ui, sans-serif; transition: all .15s; }
+#focus-btn:hover, #focus-btn[aria-pressed="true"] { background: #efece4; color: #3d3929; }
+.map-section.fullscreen #focus-btn { position: fixed; top: 60px; right: 16px; z-index: 10000; }
+#layer-switch { position: absolute; bottom: 12px; right: 12px; z-index: 1000; display: flex; gap: 0; background: rgba(255,255,255,0.92); border: 1px solid #f0ede6; border-radius: 8px; overflow: hidden; backdrop-filter: blur(8px); }
+.map-section.fullscreen #layer-switch { position: fixed; bottom: 16px; right: 16px; z-index: 10000; }
 .ls-btn { padding: 6px 12px; font-size: 12px; cursor: pointer; color: #a0987a; transition: all .15s; user-select: none; background: transparent; border: none; font-family: inherit; }
 .ls-btn.active { background: #efece4; color: #7a6a4a; font-weight: 600; }
 .ls-btn:not(.active):hover { color: #3d3929; }
@@ -738,6 +759,9 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 .day-date { font-size: 12px; color: #a0987a; }
 .highlight { color: #c49a6c; font-weight: 600; }
 .day-route { font-size: 14px; color: #c49a6c; margin-bottom: 8px; }
+.day-route-path { color: #5d7f91; font-weight: 600; }
+.day-route-separator { color: #b8b09a; }
+.day-route-focus { color: #a66b35; font-weight: 500; }
 .day-items { list-style: none; font-size: 13px; line-height: 1.7; color: #5a5240; }
 .day-items li::before { content: '\25b8 '; color: #fbbf24; }
 
@@ -747,12 +771,18 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 .day-shuttle-note { margin-top: 8px; padding: 6px 10px; background: #fff8f0; border-left: 3px solid #e8a838; border-radius: 4px; font-size: 12px; color: #7a5a20; }
 /* 微观日志 */
 .timeline-wrap { margin-top: 10px; }
-.timeline-toggle { cursor: pointer; font-size: 12px; color: #7a7258; user-select: none; padding: 4px 0; }
+.timeline-toggle { cursor: pointer; font: inherit; font-size: 12px; color: #7a7258; user-select: none; padding: 4px 0; border: 0; background: transparent; }
 .timeline-toggle:hover { color: #3d3929; }
 .timeline { border-left: 2px solid #e8e4da; margin-left: 4px; padding-left: 12px; }
 .tl-row { display: flex; gap: 8px; padding: 3px 0; font-size: 12px; line-height: 1.5; }
 .tl-time { color: #b8b09a; font-family: monospace; flex-shrink: 0; min-width: 5em; }
 .tl-action { color: #5a5240; }
+.day-timeline { margin: 14px 0 2px; padding-left: 14px; border-left-color: #ddd6c8; }
+.day-timeline .tl-row { align-items: baseline; padding: 7px 0; border-bottom: 1px solid #f2eee7; }
+.day-timeline .tl-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.day-timeline .tl-time { color: #a66b35; font-weight: 600; min-width: 7.6em; }
+.day-timeline .tl-duration { color: #8c8170; font-weight: 500; }
+.day-timeline .tl-action { color: #5a5240; }
 
 @media (max-width: 640px) { #map { height: 280px; touch-action: pan-y; } }
 @media (max-width: 640px) { .container { padding: 20px 16px; } header h1 { font-size: 22px; } .stop { gap: 12px; } .stop-title { font-size: 14px; } .day-cards { grid-template-columns: 1fr; } .day-label{font-size:16px!important} .day-date{font-size:13px!important} .day-route{font-size:14px!important} .day-items{font-size:14px!important} }
@@ -769,20 +799,13 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
 </header>
 
-<div class="map-section">
-  <div class="legend">
-    <span class="legend-item"><span class="legend-line" style="background:#e74c3c"></span>D1</span>
-    <span class="legend-item"><span class="legend-line" style="background:#f39c12"></span>D2</span>
-    <span class="legend-item"><span class="legend-line" style="background:#27ae60"></span>D3</span>
-    <span class="legend-item"><span class="legend-line" style="background:#00bcd4"></span>D4</span>
-    <span class="legend-item"><span class="legend-line" style="background:#3f51b5"></span>D5</span>
-    <span class="legend-item"><span class="legend-line" style="background:#9c27b0"></span>D6</span>
-    <span class="legend-item"><span class="legend-line" style="background:#e91e63"></span>D7</span>
-  </div>
+<div class="map-section" id="map-section">
   <div id="map"></div>
-  <div id="layer-switch">
-    <span class="ls-btn active" data-layer="standard">标准</span>
-    <span class="ls-btn" data-layer="terrain">地形</span>
+  <button id="fullscreen-btn" type="button" aria-label="全屏浏览地图" title="全屏浏览">⛶</button>
+  <button id="focus-btn" type="button" aria-pressed="false">聚焦河谷</button>
+  <div id="layer-switch" role="group" aria-label="地图图层">
+    <button class="ls-btn active" type="button" data-layer="standard" aria-pressed="true">标准</button>
+    <button class="ls-btn" type="button" data-layer="terrain" aria-pressed="false">地形</button>
   </div>
   <div id="zoom-display">Zoom 5</div>
 </div>
@@ -794,7 +817,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
       <div class="stop-content">
         <div class="stop-title" style="color:#e74c3c">D1 <span class="st-sub">成都 → 康定</span></div>
         <div class="stop-meta">7月11日 周六 · 🚗 280km · 3.5h</div>
-        <div class="stop-tags"><span class="tag">泸定桥</span><span class="tag">🏨 康定</span><span class="tag tag-elev">🏔️2818m</span></div>
+        <div class="stop-tags"><span class="tag">泸定桥</span><span class="tag">🏨 康定</span><span class="tag tag-elev">🏔️2817m</span></div>
         <div class="tip-note">🏔️ 康定海拔 2560m，第一晚注意高反适应</div><div class="tip-note">🌡️ 昼夜温差大，备厚外套</div>
       </div>
     </div>
@@ -812,7 +835,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
       <div class="stop-content">
         <div class="stop-title" style="color:#27ae60">D3 <span class="st-sub">新都桥 → 塔公草原 → 墨石公园 → 丹巴</span></div>
         <div class="stop-meta">7月13日 周一 · 🚗 150km · 4h</div>
-        <div class="stop-tags"><span class="tag">塔公草原</span><span class="tag">墨石公园</span><span class="tag">雅拉雪山</span><span class="tag">🔄 含摆渡车</span><span class="tag tag-elev">🏔️4170m</span></div>
+        <div class="stop-tags"><span class="tag">塔公草原</span><span class="tag">墨石公园</span><span class="tag">雅拉雪山</span><span class="tag">🔄 含摆渡车</span></div>
         <div class="tip-note">🎫 墨石公园需换乘摆渡车，预留+2h</div><div class="tip-note">🌡️ 丹巴海拔仅1800m，今晚可以睡个好觉</div>
       </div>
     </div>
@@ -821,7 +844,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
       <div class="stop-content">
         <div class="stop-title" style="color:#00bcd4">D4 <span class="st-sub">丹巴 → 甲居藏寨 → 四姑娘山</span></div>
         <div class="stop-meta">7月14日 周二 · 🚗 120km · 3h</div>
-        <div class="stop-tags"><span class="tag">甲居藏寨</span><span class="tag">🏨 四姑娘山镇</span><span class="tag tag-elev">🏔️3147m</span></div>
+        <div class="stop-tags"><span class="tag">甲居藏寨</span><span class="tag">🏨 四姑娘山镇</span><span class="tag tag-elev">🏔️3151m</span></div>
         <div class="tip-note">🏔️ 四姑娘山镇 3200m，注意高反</div><div class="tip-note">🌙 今晚早点休息，明天全天徒步</div>
       </div>
     </div>
@@ -830,7 +853,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
       <div class="stop-content">
         <div class="stop-title" style="color:#3f51b5">D5 <span class="st-sub">四姑娘山 · 双桥沟全天</span></div>
         <div class="stop-meta">7月15日 周三 · 🚗 景区游览</div>
-        <div class="stop-tags"><span class="tag">双桥沟</span><span class="tag">🏨 四姑娘山镇</span><span class="tag">🔄 含摆渡车</span><span class="tag tag-elev">🏔️3147m</span></div>
+        <div class="stop-tags"><span class="tag">双桥沟</span><span class="tag">🏨 四姑娘山镇</span><span class="tag">🔄 含摆渡车</span><span class="tag tag-elev">🏔️3151m</span></div>
         <div class="tip-note">🎫 双桥沟景区大巴随上随下，最轻松的一条沟</div><div class="tip-note">🌲 红杉林海拔 3840m，缓步慢行</div><div class="tip-note">📸 四姑娜措倒影最佳在正午光线</div>
       </div>
     </div>
@@ -859,7 +882,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 <div class="day-cards">
   <div class="day-card card-0">
     <div class="day-header"><span class="day-label" style="color:#e74c3c">D1 · 7月11日 周六</span><span class="day-date">🚗 280km · 3.5h</span></div>
-    <div class="day-route">成都 → 康定</div>
+    <div class="day-route"><span class="day-route-path">成都 → 康定</span></div>
     <ul class="day-items"><li>早 8:00 成都出发，成雅高速</li>
 <li>泸定桥（停留 1h）</li>
 <li>🏨 宿康定（2560m）</li></ul>
@@ -868,14 +891,14 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-1">
     <div class="day-header"><span class="day-label" style="color:#f39c12">D2 · 7月12日 周日</span><span class="day-date">🚗 80km · 2.5h</span></div>
-    <div class="day-route">康定 → 折多山 → 新都桥</div>
+    <div class="day-route"><span class="day-route-path">康定 → 折多山 → 新都桥</span></div>
     <ul class="day-items"><li>翻越折多山垭口 4298m</li>
 <li>鱼子西观景台（远眺贡嘎雪山）</li>
 <li>🏨 宿新都桥（3460m）</li></ul>
     
       <div class="timeline-wrap">
-    <div class="timeline-toggle" onclick="var n=this.nextElementSibling;n.style.display=n.style.display==='none'?'':'none';this.textContent=this.textContent==='📋 微观日志 ▼'?'📋 微观日志 ▶':'📋 微观日志 ▼';">📋 微观日志 ▼</div>
-    <div class="timeline" style="display:none;">
+    <button class="timeline-toggle" type="button" aria-expanded="false" aria-controls="timeline-2">📋 微观日志 <span class="timeline-chevron">▼</span></button>
+    <div class="timeline" id="timeline-2" hidden>
       <div class="tl-row"><span class="tl-time">08:00</span><span class="tl-action">【强制拔营】康定出发</span></div>
 <div class="tl-row"><span class="tl-time">08:00-09:30</span><span class="tl-action">翻越折多山，行车40km，发卡弯多</span></div>
 <div class="tl-row"><span class="tl-time">09:30-10:00</span><span class="tl-action">【核心窗口】折多山垭口 4298m，拍照休息</span></div>
@@ -888,7 +911,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-2">
     <div class="day-header"><span class="day-label" style="color:#27ae60">D3 · 7月13日 周一</span><span class="day-date">🚗 150km · 4h</span></div>
-    <div class="day-route">新都桥 → 塔公草原 → 墨石公园 → 丹巴</div>
+    <div class="day-route"><span class="day-route-path">新都桥 → 塔公草原 → 墨石公园 → 丹巴</span></div>
     <ul class="day-items"><li>塔公草原 · 雅拉雪山</li>
 <li>墨石公园 <span class="highlight">异域星球地貌</span></li>
 <li>🏨 宿丹巴（1800m）</li></ul>
@@ -897,7 +920,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-3">
     <div class="day-header"><span class="day-label" style="color:#00bcd4">D4 · 7月14日 周二</span><span class="day-date">🚗 120km · 3h</span></div>
-    <div class="day-route">丹巴 → 甲居藏寨 → 四姑娘山</div>
+    <div class="day-route"><span class="day-route-path">丹巴 → 甲居藏寨 → 四姑娘山</span></div>
     <ul class="day-items"><li>甲居藏寨 <span class="highlight">中国最美古村落</span></li>
 <li>小金县沿途河谷风光</li>
 <li>🏨 宿四姑娘山镇（3200m）</li></ul>
@@ -906,7 +929,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-4">
     <div class="day-header"><span class="day-label" style="color:#3f51b5">D5 · 7月15日 周三</span><span class="day-date">🚗 景区游览</span></div>
-    <div class="day-route">四姑娘山 · 双桥沟全天</div>
+    <div class="day-route"><span class="day-route-path">四姑娘山</span><span class="day-route-separator"> · </span><span class="day-route-focus">双桥沟全天</span></div>
     <ul class="day-items"><li>双桥沟景区（景区大巴，轻松游览）</li>
 <li>红杉林 → 布达拉峰 → 四姑娜措</li>
 <li>🏨 宿四姑娘山镇</li></ul>
@@ -915,7 +938,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-5">
     <div class="day-header"><span class="day-label" style="color:#9c27b0">D6 · 7月16日 周四</span><span class="day-date">🚗 200km · 4h</span></div>
-    <div class="day-route">四姑娘山 → 巴朗山 → 成都</div>
+    <div class="day-route"><span class="day-route-path">四姑娘山 → 巴朗山 → 成都</span></div>
     <ul class="day-items"><li>巴朗山垭口 5040m（川西最高公路垭口）</li>
 <li>卧龙自然保护区</li>
 <li>🏠 回成都</li></ul>
@@ -924,7 +947,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-6">
     <div class="day-header"><span class="day-label" style="color:#e91e63">D7 · 7月17日 周五</span><span class="day-date"></span></div>
-    <div class="day-route">成都 · 休整</div>
+    <div class="day-route"><span class="day-route-path">成都</span><span class="day-route-separator"> · </span><span class="day-route-focus">休整</span></div>
     <ul class="day-items"><li>上午补觉/自由活动</li>
 <li>中午成都火锅 🍲</li>
 <li>✈️ 下午返程</li></ul>
@@ -933,7 +956,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
 </div>
 
-<div class="footer"></div>
+<div class="footer">Tumu Roadbook v0.1.8 · YAML 驱动的自驾路线图</div>
 </div>
 
 <script>/* @preserve
@@ -944,11 +967,11 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 //# sourceMappingURL=leaflet.js.map</script>
 <script>
 // ═══════════════════ Route Data ═══════════════════
-var r_1 = [[30.660667, 104.063294], [30.550935, 104.012504], [30.401452, 103.89486], [30.370662, 103.845879], [30.321527, 103.833763], [30.302073, 103.813676], [30.277132, 103.769273], [30.273768, 103.658655], [30.232851, 103.601877], [30.206947, 103.533967], [30.183169, 103.499872], [30.187514, 103.402399], [30.151571, 103.216989], [30.117514, 103.153771], [30.064863, 103.101138], [30.017652, 102.988882], [29.977902, 102.953812], [30.00364, 102.885316], [29.998927, 102.846706], [30.051633, 102.757932], [30.026903, 102.722166], [30.027937, 102.67258], [30.018932, 102.660848], [30.038653, 102.57846], [30.012346, 102.544193], [29.999832, 102.477636], [29.94541, 102.392656], [29.951876, 102.371925], [29.946066, 102.248873], [29.968654, 102.207227], [29.991409, 102.197307], [29.990476, 102.17054], [30.030344, 102.165084], [30.033087, 102.13658], [30.060454, 102.139895], [30.055699, 102.101522], [30.085469, 102.03981], [30.078412, 102.015221], [30.060546, 101.999504], [30.054533, 101.96542], [29.999862, 101.954555]];
-var r_2 = [[29.999862, 101.954555], [29.995193, 101.953649], [30.001973, 101.950566], [30.00798, 101.954356], [30.023075, 101.954235], [30.007542, 101.951572], [30.000692, 101.947319], [30.000924, 101.944305], [29.997207, 101.944516], [29.986947, 101.932549], [29.985811, 101.928214], [29.990164, 101.915793], [29.988291, 101.904393], [29.992754, 101.894621], [29.992963, 101.883026], [29.994107, 101.886563], [29.995764, 101.878677], [29.996446, 101.88115], [29.997434, 101.876699], [30.012916, 101.861598], [30.012419, 101.864829], [30.015049, 101.858955], [30.015459, 101.861554], [30.031437, 101.85019], [30.040603, 101.836587], [30.043784, 101.828373], [30.040699, 101.830648], [30.043831, 101.826394], [30.053081, 101.821585], [30.05277, 101.824768], [30.058071, 101.818236], [30.054475, 101.817732], [30.062739, 101.813668], [30.060872, 101.813006], [30.065837, 101.810555], [30.061768, 101.811503], [30.066888, 101.808208], [30.076582, 101.808382], [30.074184, 101.805376], [30.076736, 101.805004], [30.074341, 101.804066], [30.074486, 101.799786], [30.080709, 101.796591], [30.07438, 101.797386], [30.077095, 101.791315], [30.071768, 101.790928], [30.073455, 101.79079], [30.073451, 101.78485], [30.069002, 101.773275], [30.069982, 101.761934], [30.060978, 101.750231], [30.059937, 101.738446], [30.051646, 101.724628], [30.054347, 101.718583], [30.060301, 101.713624], [30.083071, 101.700721], [30.088647, 101.690379], [30.088528, 101.68125], [30.080234, 101.649754], [30.075651, 101.608567], [30.059447, 101.579268], [30.047318, 101.568112], [30.03767, 101.541377], [30.018143, 101.531398], [30.023967, 101.527498], [30.034494, 101.513721], [30.036317, 101.504362], [30.044387, 101.49065], [30.046372, 101.491958]];
-var r_3 = [[30.046372, 101.491958], [30.050372, 101.482444], [30.08936, 101.479331], [30.11718, 101.485177], [30.130996, 101.499978], [30.23489, 101.496498], [30.288352, 101.531711], [30.314395, 101.534526], [30.322729, 101.520779], [30.338763, 101.542351], [30.353754, 101.537032], [30.347245, 101.563873], [30.344477, 101.57349], [30.357055, 101.546045], [30.360798, 101.57101], [30.396922, 101.56727], [30.422824, 101.541877], [30.444179, 101.535708], [30.437002, 101.534923], [30.457889, 101.52524], [30.483463, 101.492611], [30.543431, 101.509531], [30.54349, 101.57632], [30.52969, 101.61744], [30.607319, 101.67049], [30.60866, 101.736254], [30.639606, 101.732165], [30.703859, 101.749678], [30.77438, 101.721289], [30.799631, 101.775442], [30.84884, 101.812355], [30.858278, 101.849053], [30.880626, 101.879218], [30.953339, 101.881086], [30.954702, 101.863038], [30.983559, 101.858528], [30.97911, 101.853808]];
-var r_4 = [[30.97911, 101.853808], [30.983559, 101.858528], [30.943249, 101.86375], [30.936035, 101.868147], [30.930774, 101.863616], [30.937296, 101.870005], [30.934079, 101.876808], [30.879894, 101.879362], [30.88215, 101.889639], [30.877229, 101.901047], [30.913305, 101.940232], [30.94011, 101.954704], [30.943411, 101.971738], [30.955483, 101.993845], [30.969512, 102.014997], [30.984064, 102.023963], [30.993052, 102.037486], [30.996953, 102.052728], [31.008334, 102.067401], [31.008534, 102.084022], [31.003755, 102.091537], [31.00557, 102.111544], [31.020322, 102.134141], [31.035799, 102.173328], [31.028938, 102.197991], [31.028961, 102.260214], [31.022767, 102.270295], [31.014077, 102.323726], [31.00671, 102.328064], [30.999884, 102.344187], [31.007794, 102.366248], [31.004597, 102.382246], [31.019366, 102.408527], [31.016893, 102.435821], [31.028454, 102.493388], [31.021988, 102.526465], [31.024234, 102.539727], [31.009463, 102.567196], [30.990956, 102.582687], [30.989962, 102.590664], [30.9795, 102.600108], [30.976187, 102.619272], [30.961677, 102.647898], [30.979147, 102.703827], [30.980318, 102.764997], [30.993203, 102.789514], [30.995775, 102.830977]];
-var r_5 = [[30.995775, 102.830977], [31.000139, 102.840381], [30.993992, 102.835239], [30.997723, 102.862658], [30.988526, 102.842471], [30.966113, 102.876889], [30.91308, 102.901552], [30.891787, 102.913841], [30.885615, 102.936469], [30.868519, 102.96392], [30.882352, 102.965749], [30.883969, 102.97328], [30.897196, 102.982686], [30.880837, 102.975504], [30.898277, 102.988384], [30.876747, 102.974489], [30.873323, 102.979648], [30.857455, 102.972074], [30.891181, 102.992442], [30.894261, 103.007757], [30.911251, 103.016735], [30.91287, 103.034852], [30.9206, 103.051352], [30.934947, 103.065354], [30.947063, 103.068656], [30.981496, 103.131733], [30.99572, 103.135972], [31.045525, 103.200847], [31.084251, 103.223649], [31.091592, 103.248448], [31.101121, 103.257706], [31.113844, 103.251181], [31.120901, 103.253119], [31.121786, 103.280264], [31.11759, 103.29213], [31.107395, 103.293394], [31.099092, 103.304637], [31.093598, 103.302872], [31.087043, 103.311904], [31.076372, 103.313825], [31.071115, 103.329271], [31.060812, 103.336453], [31.059836, 103.353435], [31.073444, 103.374584], [31.062541, 103.387969], [31.061124, 103.410151], [31.078605, 103.425844], [31.077937, 103.451055], [31.065941, 103.478935], [31.067218, 103.490033], [31.045961, 103.52741], [31.026689, 103.537252], [30.997102, 103.591071], [30.959369, 103.598214], [30.94684, 103.625484], [30.956915, 103.669658], [30.94972, 103.682805], [30.914076, 103.727194], [30.899958, 103.758782], [30.880025, 103.773717], [30.86875, 103.7929], [30.846486, 103.815012], [30.802568, 103.852462], [30.787487, 103.878581], [30.782547, 103.903615], [30.742148, 103.962038], [30.695177, 104.011603], [30.669262, 104.05782], [30.660596, 104.058103], [30.660667, 104.063294]];
+var r_1 = [[30.660667, 104.063294], [30.550935, 104.012504], [30.401452, 103.89486], [30.370662, 103.845879], [30.321527, 103.833763], [30.302073, 103.813676], [30.277132, 103.769273], [30.273768, 103.658655], [30.232851, 103.601877], [30.206947, 103.533967], [30.183169, 103.499872], [30.187514, 103.402399], [30.151571, 103.216989], [30.117514, 103.153771], [30.064863, 103.101138], [30.017652, 102.988882], [29.977902, 102.953812], [30.00364, 102.885316], [29.998927, 102.846706], [30.051633, 102.757932], [30.026903, 102.722166], [30.027937, 102.67258], [30.018932, 102.660848], [30.038642, 102.578368], [30.012346, 102.544193], [29.999832, 102.477636], [29.945404, 102.392713], [29.951693, 102.373282], [29.945902, 102.249144], [29.968654, 102.207227], [29.991409, 102.197307], [29.990476, 102.17054], [30.030344, 102.165084], [30.033087, 102.13658], [30.060454, 102.139895], [30.055699, 102.101522], [30.085469, 102.03981], [30.078412, 102.015221], [30.060546, 101.999504], [30.054533, 101.96542], [29.999862, 101.954555]];
+var r_2 = [[29.999862, 101.954555], [29.995216, 101.953914], [29.998611, 101.951109], [29.994988, 101.945992], [29.999762, 101.949715], [30.00289, 101.948269], [30.000614, 101.947201], [30.000987, 101.944372], [29.996524, 101.943856], [29.988709, 101.935963], [29.985807, 101.929289], [29.990164, 101.915793], [29.988291, 101.904393], [29.992754, 101.894621], [29.992963, 101.883026], [29.994107, 101.886563], [29.995764, 101.878677], [29.996446, 101.88115], [29.997434, 101.876699], [30.012916, 101.861598], [30.012419, 101.864829], [30.015049, 101.858955], [30.015459, 101.861554], [30.031437, 101.85019], [30.040603, 101.836587], [30.043784, 101.828373], [30.040699, 101.830648], [30.043831, 101.826394], [30.053081, 101.821585], [30.05277, 101.824768], [30.058071, 101.818236], [30.054475, 101.817732], [30.062739, 101.813668], [30.060872, 101.813006], [30.065837, 101.810555], [30.061768, 101.811503], [30.066888, 101.808208], [30.076582, 101.808382], [30.074184, 101.805376], [30.076736, 101.805004], [30.074341, 101.804066], [30.074486, 101.799786], [30.080709, 101.796591], [30.07438, 101.797386], [30.077095, 101.791315], [30.071768, 101.790928], [30.073455, 101.79079], [30.073451, 101.78485], [30.069002, 101.773275], [30.069982, 101.761934], [30.060978, 101.750231], [30.059937, 101.738446], [30.051646, 101.724628], [30.054347, 101.718583], [30.060301, 101.713624], [30.083071, 101.700721], [30.088647, 101.690379], [30.088528, 101.68125], [30.080234, 101.649754], [30.075651, 101.608567], [30.059447, 101.579268], [30.047318, 101.568112], [30.03767, 101.541377], [30.018143, 101.531398], [30.023967, 101.527498], [30.034494, 101.513721], [30.036317, 101.504362], [30.0444, 101.490621], [30.046372, 101.491958]];
+var r_3 = [[30.046372, 101.491958], [30.050378, 101.482452], [30.08936, 101.479331], [30.11718, 101.485177], [30.130996, 101.499978], [30.23489, 101.496498], [30.288352, 101.531711], [30.314395, 101.534526], [30.322729, 101.520779], [30.338763, 101.542351], [30.353754, 101.537032], [30.357055, 101.546045], [30.343914, 101.564534], [30.357055, 101.546045], [30.353288, 101.559773], [30.369503, 101.575158], [30.444179, 101.535708], [30.437002, 101.534923], [30.457889, 101.52524], [30.483463, 101.492611], [30.543271, 101.509376], [30.54349, 101.57632], [30.52969, 101.61744], [30.607319, 101.67049], [30.60866, 101.736254], [30.639606, 101.732165], [30.693144, 101.75046], [30.774722, 101.721342], [30.799631, 101.775442], [30.85401, 101.820104], [30.858278, 101.849053], [30.879585, 101.883319]];
+var r_4 = [[30.879585, 101.883319], [30.879894, 101.879362], [30.895104, 101.87672], [30.934079, 101.876808], [30.937296, 101.870005], [30.930774, 101.863616], [30.936035, 101.868147], [30.943249, 101.86375], [30.936035, 101.868147], [30.930774, 101.863616], [30.937296, 101.870005], [30.934079, 101.876808], [30.879894, 101.879362], [30.88215, 101.889639], [30.877261, 101.901015], [30.912979, 101.939877], [30.94011, 101.954704], [30.943238, 101.971483], [30.955483, 101.993845], [30.969512, 102.014997], [30.984064, 102.023963], [30.993052, 102.037486], [30.996928, 102.052797], [31.008334, 102.067401], [31.008762, 102.082789], [31.003532, 102.094361], [31.00557, 102.111544], [31.020327, 102.13424], [31.035799, 102.173328], [31.028938, 102.197991], [31.028961, 102.260214], [31.022767, 102.270295], [31.014077, 102.323726], [31.00671, 102.328064], [30.999884, 102.344187], [31.007794, 102.366248], [31.004597, 102.382246], [31.019366, 102.408527], [31.016893, 102.435821], [31.028454, 102.493388], [31.021988, 102.526465], [31.024234, 102.539727], [31.009463, 102.567196], [30.990956, 102.582687], [30.989962, 102.590664], [30.9795, 102.600108], [30.976187, 102.619272], [30.961677, 102.647898], [30.979147, 102.703827], [30.980318, 102.764997], [30.993203, 102.789514], [30.995775, 102.830977]];
+var r_5 = [[30.995775, 102.830977], [31.000139, 102.840381], [30.993992, 102.835239], [30.997723, 102.862658], [30.988369, 102.842508], [30.966113, 102.876889], [30.91308, 102.901552], [30.891787, 102.913841], [30.885677, 102.936337], [30.868519, 102.96392], [30.882352, 102.965749], [30.883974, 102.973253], [30.897145, 102.982559], [30.88078, 102.975362], [30.898265, 102.988372], [30.879069, 102.979923], [30.876747, 102.974489], [30.873323, 102.979648], [30.857379, 102.971935], [30.891181, 102.992442], [30.894261, 103.007757], [30.911251, 103.016735], [30.91287, 103.034852], [30.9206, 103.051352], [30.934947, 103.065354], [30.947063, 103.068656], [30.981496, 103.131733], [30.99572, 103.135972], [31.045525, 103.200847], [31.084251, 103.223649], [31.091592, 103.248448], [31.101121, 103.257706], [31.120446, 103.252006], [31.12173, 103.280237], [31.117638, 103.292152], [31.107563, 103.29342], [31.099092, 103.304637], [31.093598, 103.302872], [31.087043, 103.311904], [31.076577, 103.313534], [31.071115, 103.329271], [31.060812, 103.336453], [31.059836, 103.353435], [31.073444, 103.374584], [31.062541, 103.387969], [31.061124, 103.410151], [31.078605, 103.425844], [31.077937, 103.451055], [31.065941, 103.478935], [31.067218, 103.490033], [31.045961, 103.52741], [31.026689, 103.537252], [30.997102, 103.591071], [30.959369, 103.598214], [30.94684, 103.625484], [30.956915, 103.669658], [30.94972, 103.682805], [30.914076, 103.727194], [30.899958, 103.758782], [30.880025, 103.773717], [30.86875, 103.7929], [30.846486, 103.815012], [30.802568, 103.852462], [30.787487, 103.878581], [30.782547, 103.903615], [30.742148, 103.962038], [30.695177, 104.011603], [30.669262, 104.05782], [30.660596, 104.058103], [30.660667, 104.063294]];
 var sr_1 = [[30.995599, 102.830852], [30.995599, 102.830852]];
 var sr_2 = [[30.659867, 104.063315], [30.659867, 104.063315]];
 var mainRoutes = [
@@ -962,27 +985,40 @@ var spurRoutes = [
   ['#3f51b5', sr_1],
   ['#e91e63', sr_2],
 ];
-var cityPosData = [{"name": "成都", "lat": 30.659867, "lng": 104.063315, "color": "#e74c3c", "elevation": 497}, {"name": "康定", "lat": 29.999862, "lng": 101.954555, "color": "#e74c3c", "elevation": 2818}, {"name": "新都桥", "lat": 30.046372, "lng": 101.491958, "color": "#f39c12", "elevation": 3465}, {"name": "丹巴", "lat": 30.97911, "lng": 101.853808, "color": "#27ae60", "elevation": 4170}, {"name": "四姑娘山", "lat": 30.995775, "lng": 102.830977, "color": "#00bcd4", "elevation": 3147}];
-var dxData = [{"name": "D1", "lat": 30.026903, "lng": 102.722166, "color": "#e74c3c", "dist": "🚗 280km · 3.5h", "sub": ""}, {"name": "D2", "lat": 30.065837, "lng": 101.810555, "color": "#f39c12", "dist": "🚗 80km · 2.5h", "sub": ""}, {"name": "D3", "lat": 30.437002, "lng": 101.534923, "color": "#27ae60", "dist": "🚗 150km · 4h", "sub": ""}, {"name": "D4", "lat": 31.035799, "lng": 102.173328, "color": "#00bcd4", "dist": "🚗 120km · 3h", "sub": ""}, {"name": "D5", "lat": 31.015599, "lng": 102.830852, "color": "#3f51b5", "dist": "🚗 景区游览", "sub": "四姑娘山全天"}, {"name": "D6", "lat": 31.107395, "lng": 103.293394, "color": "#9c27b0", "dist": "🚗 200km · 4h", "sub": ""}, {"name": "D7", "lat": 30.679867, "lng": 104.063315, "color": "#e91e63", "dist": "", "sub": "成都全天"}];
-var majorSpots = [[29.914526, 102.230202, "#8b6a4a", "泸定桥", 0, -20], [30.074341, 101.804066, "#8b6a4a", "折多山垭口", 0, -20], [30.337029, 101.560724, "#8b6a4a", "塔公草原", 0, 18], [30.4496, 101.5417, "#8b6a4a", "墨石公园", 0, -20], [30.386496, 101.66313, "#8b6a4a", "雅拉雪山观景台", 0, -20], [30.943108, 101.864079, "#8b6a4a", "甲居藏寨", 0, 18], [30.981747, 102.767846, "#8b6a4a", "双桥沟", 0, -20], [30.910711, 102.894498, "#8b6a4a", "巴朗山垭口", 0, 18]];
-var spots = [[31.115827, 103.250362, "鱼子西"], [30.564468, 101.4932, "惠远寺"]];
+var cityPosData = [{"name": "成都", "lat": 30.659867, "lng": 104.063315, "color": "#e74c3c", "elevation": 500}, {"name": "康定", "lat": 29.999862, "lng": 101.954555, "color": "#e74c3c", "elevation": 2817}, {"name": "新都桥", "lat": 30.046372, "lng": 101.491958, "color": "#f39c12", "elevation": 3465}, {"name": "丹巴", "lat": 30.879585, "lng": 101.883319, "color": "#27ae60", "elevation": 1873}, {"name": "四姑娘山", "lat": 30.995775, "lng": 102.830977, "color": "#00bcd4", "elevation": 3151}];
+var dxData = [{"name": "D1", "lat": 30.026903, "lng": 102.722166, "color": "#e74c3c", "dist": "280km", "sub": ""}, {"name": "D2", "lat": 30.065837, "lng": 101.810555, "color": "#f39c12", "dist": "80km", "sub": ""}, {"name": "D3", "lat": 30.444179, "lng": 101.535708, "color": "#27ae60", "dist": "150km", "sub": ""}, {"name": "D4", "lat": 31.00557, "lng": 102.111544, "color": "#00bcd4", "dist": "120km", "sub": ""}, {"name": "D5", "lat": 31.015599, "lng": 102.830852, "color": "#3f51b5", "dist": "景区游览", "sub": "四姑娘山全天"}, {"name": "D6", "lat": 31.107563, "lng": 103.29342, "color": "#9c27b0", "dist": "200km", "sub": ""}, {"name": "D7", "lat": 30.679867, "lng": 104.063315, "color": "#e91e63", "dist": "", "sub": "成都全天"}];
+var majorSpots = [[29.914497, 102.230205, "#8b6a4a", "泸定桥", 0, -20], [30.074341, 101.804066, "#8b6a4a", "折多山垭口", 0, -20], [30.337029, 101.560724, "#8b6a4a", "塔公草原", 0, 18], [30.4496, 101.5417, "#8b6a4a", "墨石公园", 0, -20], [30.385389, 101.662666, "#8b6a4a", "雅拉雪山观景台", 0, -20], [30.943108, 101.864079, "#8b6a4a", "甲居藏寨", 0, 18], [30.981747, 102.767846, "#8b6a4a", "双桥沟", 0, -20], [30.910711, 102.894498, "#8b6a4a", "巴朗山垭口", 0, 18]];
+var spots = [[31.115968, 103.250411, "鱼子西"], [30.564468, 101.4932, "惠远寺"]];
 // ═══════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════
 // map.js — 线段碰撞检测（路线用线段而非散点）
 // ═══════════════════════════════════════════════════
 
-var map = L.map('map', { center: [30.5874, 102.5519], zoom: 7, zoomControl: true, scrollWheelZoom: true });
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>', subdomains: 'abcd', maxZoom: 20 }).addTo(map);
-
-var standardTile = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>', subdomains: 'abcd', maxZoom: 20 });
-var terrainTile = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri', maxZoom: 17 });
+var map = L.map('map', { center: [30.5772, 102.5493], zoom: 7, zoomControl: true, scrollWheelZoom: true, attributionControl: true });
+window.routeMap = map;
+var tileAttribution = '&copy; <a href="https://www.esri.com/">Esri</a>';
+var standardTile = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', { attribution: tileAttribution, maxZoom: 20, className: 'tile-standard' });
+var standardTransport = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, opacity: 0.36, className: 'tile-transport' });
+var terrainTile = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', { attribution: tileAttribution, maxZoom: 17, className: 'tile-terrain' });
 standardTile.addTo(map);
+standardTransport.addTo(map);
 document.querySelectorAll('.ls-btn').forEach(function(btn) {
   btn.addEventListener('click', function() {
-    document.querySelectorAll('.ls-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.ls-btn').forEach(function(b) {
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed', 'false');
+    });
     this.classList.add('active');
-    if (this.dataset.layer === 'standard') { map.removeLayer(terrainTile); standardTile.addTo(map); }
-    else { map.removeLayer(standardTile); terrainTile.addTo(map); }
+    this.setAttribute('aria-pressed', 'true');
+    if (this.dataset.layer === 'standard') {
+      map.removeLayer(terrainTile);
+      standardTile.addTo(map);
+      standardTransport.addTo(map);
+    } else {
+      map.removeLayer(standardTile);
+      map.removeLayer(standardTransport);
+      terrainTile.addTo(map);
+    }
   });
 });
 
@@ -1043,11 +1079,26 @@ var poiMajor = L.layerGroup();
 var poiMinor = L.layerGroup();
 for (var i = 0; i < majorSpots.length; i++) {
   var s = majorSpots[i];
-  poiMajor.addLayer(L.marker([s[0], s[1]], { icon: L.divIcon({ className: '', html: '<div style="display:flex;align-items:center;gap:3px;"><div style="width:6px;height:6px;background:'+s[2]+';border-radius:50%;flex-shrink:0;"></div><span style="font-size:12px;font-weight:700;color:'+s[2]+';white-space:nowrap;">'+s[3]+'</span></div>', iconSize: [40,28], iconAnchor: [s[4]+20, s[5]+14] }) }));
+  var dir = s[5] < 0 ? 'top' : (s[5] > 0 ? 'bottom' : (s[4] < 0 ? 'left' : 'right'));
+  var dot = L.circleMarker([s[0], s[1]], { radius: 4, color: s[2], weight: 2, fillColor: '#fff', fillOpacity: 1 });
+  dot.bindTooltip(s[3], {
+    permanent: true,
+    direction: dir,
+    className: 'poi-tooltip',
+    opacity: 1
+  });
+  poiMajor.addLayer(dot);
 }
 for (var i = 0; i < spots.length; i++) {
   var s = spots[i];
-  poiMinor.addLayer(L.marker([s[0], s[1]], { icon: L.divIcon({ className: '', html: '<div style="display:flex;align-items:center;gap:3px;"><div style="width:6px;height:6px;background:#3d7a4a;border-radius:50%;flex-shrink:0;"></div><span style="font-size:11px;font-weight:700;color:#3d7a4a;white-space:nowrap;">'+s[2]+'</span></div>', iconSize: [80,18], iconAnchor: [4,9] }) }));
+  var dot = L.circleMarker([s[0], s[1]], { radius: 3, color: '#3d7a4a', weight: 2, fillColor: '#fff', fillOpacity: 1 });
+  dot.bindTooltip(s[2], {
+    permanent: true,
+    direction: 'right',
+    className: 'poi-tooltip poi-tooltip-minor',
+    opacity: 1
+  });
+  poiMinor.addLayer(dot);
 }
 
 // ── 配置 ──
@@ -1175,6 +1226,25 @@ dxData.forEach(function(d){ab.extend([d.lat,d.lng]);});
 majorSpots.forEach(function(s){ab.extend([s[0],s[1]]);});
 spots.forEach(function(s){ab.extend([s[0],s[1]]);});
 map.fitBounds(ab,{padding:[50,50]});
+var overviewBounds = map.getBounds();
+var focusCfg = null;
+var focusActive = false;
+var focusBtn = document.getElementById('focus-btn');
+if (focusCfg && focusCfg.center && focusCfg.zoom) {
+  focusBtn.style.display = 'block';
+  focusBtn.textContent = focusCfg.label || '聚焦路线';
+  focusBtn.addEventListener('click', function() {
+    focusActive = !focusActive;
+    focusBtn.setAttribute('aria-pressed', focusActive ? 'true' : 'false');
+    if (focusActive) {
+      focusBtn.textContent = '查看全程';
+      map.flyTo(focusCfg.center, focusCfg.zoom, {duration: 0.8});
+    } else {
+      focusBtn.textContent = focusCfg.label || '聚焦路线';
+      map.fitBounds(overviewBounds, {padding: [50, 50]});
+    }
+  });
+}
 
 // ── Zoom 处理器 ──
 function u() {
@@ -1249,6 +1319,45 @@ function u() {
   if (map.hasLayer(labelLayer)){map.removeLayer(labelLayer);map.addLayer(labelLayer);}
 }
 map.on('zoomend',u); u();
+
+// ── 全屏切换 ──
+function toggleMapFullscreen() {
+  var el = document.getElementById('map-section');
+  el.classList.toggle('fullscreen');
+  var btn = document.getElementById('fullscreen-btn');
+  btn.textContent = el.classList.contains('fullscreen') ? '✕' : '⛶';
+  btn.title = el.classList.contains('fullscreen') ? '退出全屏' : '全屏浏览';
+  btn.setAttribute('aria-label', btn.title);
+  // 延迟让 CSS transition 完成后刷新地图
+  setTimeout(function(){ map.invalidateSize(); }, 350);
+}
+document.getElementById('fullscreen-btn').addEventListener('click', toggleMapFullscreen);
+
+// ── 微观日志展开／收起 ──
+document.querySelectorAll('.timeline-toggle').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var panel = document.getElementById(this.getAttribute('aria-controls'));
+    var expanded = this.getAttribute('aria-expanded') === 'true';
+    this.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    this.querySelector('.timeline-chevron').textContent = expanded ? '▼' : '▶';
+    panel.hidden = expanded;
+  });
+});
+
+// ESC 退出全屏
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var el = document.getElementById('map-section');
+    if (el.classList.contains('fullscreen')) {
+      el.classList.remove('fullscreen');
+      var btn = document.getElementById('fullscreen-btn');
+      btn.textContent = '⛶';
+      btn.title = '全屏浏览';
+      btn.setAttribute('aria-label', '全屏浏览地图');
+      setTimeout(function(){ map.invalidateSize(); }, 350);
+    }
+  }
+});
 
 </script>
 </body>

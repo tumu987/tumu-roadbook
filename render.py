@@ -1,20 +1,23 @@
-#!/usr/bin/env python3.11
+#!/usr/bin/env python3
 """
 render.py — 自驾路线图渲染器
 
 从 resolved JSON 读取完整数据，结合 templates/ 输出 HTML。
 
 用法:
-  python3.11 render.py resolved/xxx.json [--output output/xxx.html]
+  python3 render.py resolved/xxx.json [--output output/xxx.html]
 
 数据流:
   YAML → resolve.py → resolved/xxx.json → render.py → output/xxx.html
 """
 
+from __future__ import annotations
+
 import sys
 import os
 import json
-import re
+
+from version import __version__
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
@@ -78,6 +81,7 @@ def render(resolved_path: str, output_path: str | None = None):
     legend_html = data.get('legend_html', '')
     stats_html = data.get('stats_html', '')
     warnings_html = data.get('warnings_html', '')
+    footer_html = f'Tumu Roadbook v{__version__} · YAML 驱动的自驾路线图'
     stop_css = data.get('stop_css', '')
     tile_url = data.get('tile_url', '')
     center = data.get('center', {"lat": 36.0, "lng": 113.5})
@@ -88,6 +92,7 @@ def render(resolved_path: str, output_path: str | None = None):
     
     title = trip.get('title', '自驾路线图')
     subtitle = trip.get('subtitle', '')
+    focus = trip.get('focus')
     
     # ── 生成 route data JS ──
     route_js_parts = []
@@ -128,6 +133,7 @@ def render(resolved_path: str, output_path: str | None = None):
     map_js = map_js.replace('{{CENTER_LAT}}', str(center['lat']))
     map_js = map_js.replace('{{CENTER_LNG}}', str(center['lng']))
     map_js = map_js.replace('{{TILE_URL}}', tile_url)
+    map_js = map_js.replace('{{FOCUS_JSON}}', json.dumps(focus, ensure_ascii=False))
     
     html = html_template
     html = html.replace('{{TITLE}}', title)
@@ -138,6 +144,7 @@ def render(resolved_path: str, output_path: str | None = None):
     html = html.replace('{{STATS_HTML}}', stats_html)
     html = html.replace('{{LEGEND_HTML}}', legend_html)
     html = html.replace('{{WARNINGS_HTML}}', warnings_html)
+    html = html.replace('{{FOOTER_HTML}}', footer_html)
     html = html.replace('{{SIDEBAR_HTML}}', '\n'.join(sidebar_items))
     html = html.replace('{{CARDS_HTML}}', '\n'.join(day_card_items))
     html = html.replace('{{ROUTE_JS}}', route_js_block)
@@ -160,7 +167,7 @@ def render(resolved_path: str, output_path: str | None = None):
 
 def main():
     if len(sys.argv) < 2:
-        print("用法: python3.11 render.py resolved/xxx.json [--output output/xxx.html]")
+        print("用法: python3 render.py resolved/xxx.json [--output output/xxx.html]")
         sys.exit(1)
     
     resolved_path = sys.argv[1]

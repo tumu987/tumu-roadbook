@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.11
+#!/usr/bin/env python3
 """
 resolve.py — 自驾行程解析器
 
@@ -6,7 +6,7 @@ resolve.py — 自驾行程解析器
 输出 resolved JSON 供 render.py 使用。
 
 用法:
-  python3.11 resolve.py trips/xxx.yaml
+  python3 resolve.py trips/xxx.yaml
 
 输出:
   resolved/xxx.json  （完整 resolved 数据）
@@ -14,9 +14,12 @@ resolve.py — 自驾行程解析器
   .cache/osrm/       （OSRM 路线缓存）
 """
 
+from __future__ import annotations
+
 import sys
 import os
 import json
+import subprocess
 import time
 import math
 import re
@@ -35,6 +38,7 @@ import yaml
 CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.cache')
 GEO_CACHE_PATH = os.path.join(CACHE_DIR, 'geocode.json')
 ELEV_CACHE_PATH = os.path.join(CACHE_DIR, 'elevation.json')
+POI_VERIFY_CACHE_PATH = os.path.join(CACHE_DIR, 'poi_verification.json')
 OSRM_CACHE_DIR = os.path.join(CACHE_DIR, 'osrm')
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 RESOLVED_DIR = os.path.join(BASE_DIR, 'resolved')
@@ -55,12 +59,16 @@ def save_json_cache(path, cache):
 
 _geo_cache = load_json_cache(GEO_CACHE_PATH)
 _elev_cache = load_json_cache(ELEV_CACHE_PATH)
+_poi_verify_cache = load_json_cache(POI_VERIFY_CACHE_PATH)
 
 def save_geo_cache():
     save_json_cache(GEO_CACHE_PATH, _geo_cache)
 
 def save_elev_cache():
     save_json_cache(ELEV_CACHE_PATH, _elev_cache)
+
+def save_poi_verify_cache():
+    save_json_cache(POI_VERIFY_CACHE_PATH, _poi_verify_cache)
 
 def geocode(name: str, hint: str = '') -> list[float] | None:
     """查地名坐标，返回 [lat, lng] 或 None
@@ -147,12 +155,14 @@ def _geocode_query(query: str, cache_key: str) -> list[float] | None:
             result = [round(lat, 6), round(lng, 6)]
             _geo_cache[cache_key] = result
             save_geo_cache()
-            time.sleep(1.1)
             return result
         return None
     except Exception as e:
         print(f"  ⚠ Geocoding 失败 ({query}): {e}")
         return None
+    finally:
+        # 遵守公共 Nominatim 服务每秒最多一次请求的使用规则。
+        time.sleep(1.1)
 
 
 # ─────────────────────────────────────────────
@@ -235,8 +245,36 @@ def fetch_route(start: list, end: list, via: list | None = None) -> dict:
         print(f"  ✓ {len(polyline)} 点, {distance_km}km, {duration_min}min")
         return result
     except Exception as e:
-        print(f"  ⚠ OSRM 请求失败: {e}")
-        return _straight_line(start, end, via)
+        print(f"  ⚠ OSRM urllib 请求失败: {e}，尝试 curl 后备")
+        try:
+            curl = subprocess.run(
+                ['curl', '-L', '--max-time', '30', '-sS', url],
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=35,
+            )
+            data = json.loads(curl.stdout)
+            if data.get('code') != 'Ok' or not data.get('routes'):
+                print(f"  ⚠ OSRM 错误: {data.get('code', 'unknown')}, 直线 fallback")
+                return _straight_line(start, end, via)
+            route = data['routes'][0]
+            coords_raw = route['geometry']['coordinates']
+            polyline = [[round(c[1], 6), round(c[0], 6)] for c in coords_raw]
+            distance_km = round(route['distance'] / 1000)
+            duration_min = round(route['duration'] / 60)
+            result = {
+                "polyline": polyline,
+                "distance_km": distance_km,
+                "duration_min": duration_min,
+            }
+            with open(cache_path, 'w') as f:
+                json.dump(result, f)
+            print(f"  ✓ {len(polyline)} 点, {distance_km}km, {duration_min}min (curl)")
+            return result
+        except Exception as curl_error:
+            print(f"  ⚠ OSRM curl 后备失败: {curl_error}")
+            return _straight_line(start, end, via)
 
 
 def _straight_line(start, end, via=None):
@@ -254,10 +292,8 @@ def _straight_line(start, end, via=None):
             lng = pts[i][1] + (pts[i+1][1] - pts[i][1]) * t
             result.append([round(lat, 6), round(lng, 6)])
     result.append(pts[-1])
-    # Estimate distance from straight line (very rough)
-    dx = end[0] - start[0]
-    dy = end[1] - start[1]
-    est_km = round(((dx * 111) ** 2 + (dy * 111 * 0.8) ** 2) ** 0.5)
+    # 分段计算直线距离，确保带 via 的 fallback 不会明显低估里程。
+    est_km = round(sum(_haversine_km(pts[i], pts[i + 1]) for i in range(len(pts) - 1)))
     return {
         "polyline": result,
         "distance_km": est_km,
@@ -276,11 +312,32 @@ SPEED_GRADIENTS = {
 }
 
 DAILY_CEILING = {
-    'single_highway':  600,
-    'single_mountain': 300,
+    'single_highway':  400,
+    'single_mountain': 150,
     'dual_highway':    700,
     'dual_mountain':   300,
 }
+
+def daily_ceiling(terrain: str, drivers: int) -> tuple[int, str]:
+    """按道路类型和主驾人数返回每日里程上限与显示名称。"""
+    driver_group = 'dual' if drivers >= 2 else 'single'
+    if terrain == 'mountain':
+        return DAILY_CEILING[f'{driver_group}_mountain'], '山路/高原'
+    return DAILY_CEILING[f'{driver_group}_highway'], '平原/高速'
+
+def map_distance_label(distance_manual: str, distance_km: int) -> str:
+    """地图标签只显示里程，避免把估算行车时间当成确定时刻。"""
+    if distance_manual:
+        return str(distance_manual).split('·', 1)[0].strip()
+    return f'{distance_km}km' if distance_km and distance_km > 0 else ''
+
+def day_theme_html(theme: str) -> str:
+    """把路线与当天景点主题拆成不同语义的颜色层。"""
+    path, separator, focus = theme.partition(' · ')
+    html = f'<span class="day-route-path">{path}</span>'
+    if separator:
+        html += f'<span class="day-route-separator"> · </span><span class="day-route-focus">{focus}</span>'
+    return html
 
 def validate_daily(d, day_idx, day_colors, cities_data, city_coords_dict):
     """对单天行程做 6 项校验，返回 warnings 列表"""
@@ -294,12 +351,8 @@ def validate_daily(d, day_idx, day_colors, cities_data, city_coords_dict):
     city = d.get('city', '')
     
     # 3.1 里程天花板
-    if terrain == 'mountain':
-        ceiling = DAILY_CEILING['single_mountain']
-        label = '山路'
-    else:
-        ceiling = DAILY_CEILING['single_highway']
-        label = '平原/高速'
+    drivers = d.get('_drivers', 1)
+    ceiling, label = daily_ceiling(terrain, drivers)
     if distance_km > ceiling:
         warnings.append(f"⚠️ D{d['day']} {theme}: {distance_km}km 超过{label}上限 ({ceiling}km)")
     
@@ -372,7 +425,179 @@ def validate_route(start_coord, end_coord, via):
         warnings.append(f"📍 起点坐标异常: [{start_coord[0]}, {start_coord[1]}]")
     if not (73 < end_coord[1] < 135 and 18 < end_coord[0] < 54):
         warnings.append(f"📍 终点坐标异常: [{end_coord[0]}, {end_coord[1]}]")
+    for idx, coord in enumerate(via, start=1):
+        if not (73 < coord[1] < 135 and 18 < coord[0] < 54):
+            warnings.append(f"📍 途经点 {idx} 坐标异常: [{coord[0]}, {coord[1]}]")
     return warnings
+
+
+def validate_trip_data(data: dict) -> list[str]:
+    """对 YAML 的顶层结构做快速、可读的强制校验。"""
+    errors = []
+    if not isinstance(data, dict):
+        return ['YAML 顶层必须是对象']
+
+    trip = data.get('trip')
+    strict_coordinates = False
+    merged_timeline = False
+    if not isinstance(trip, dict):
+        errors.append('缺少 trip 对象')
+    else:
+        drivers = trip.get('drivers', 1)
+        if not isinstance(drivers, int) or isinstance(drivers, bool) or not 1 <= drivers <= 3:
+            errors.append('trip.drivers 必须是 1、2 或 3')
+        verification = trip.get('coordinate_verification', 'advisory')
+        if verification not in ('advisory', 'strict'):
+            errors.append('trip.coordinate_verification 必须是 advisory 或 strict')
+        strict_coordinates = verification == 'strict'
+        timeline_mode = trip.get('timeline_mode', 'split')
+        if timeline_mode not in ('split', 'merged'):
+            errors.append('trip.timeline_mode 必须是 split 或 merged')
+        merged_timeline = timeline_mode == 'merged'
+
+    days = data.get('days')
+    if not isinstance(days, list) or not days:
+        errors.append('days 必须是非空列表')
+        return errors
+
+    seen_days = set()
+    for idx, day in enumerate(days, start=1):
+        prefix = f'days[{idx}]'
+        if not isinstance(day, dict):
+            errors.append(f'{prefix} 必须是对象')
+            continue
+        day_no = day.get('day', idx)
+        if day_no in seen_days:
+            errors.append(f'day {day_no} 重复')
+        seen_days.add(day_no)
+        route = day.get('route')
+        if not isinstance(route, dict):
+            errors.append(f'{prefix}.route 缺失')
+            continue
+        for field in ('start', 'end'):
+            value = route.get(field)
+            if not isinstance(value, str) and not (
+                isinstance(value, (list, tuple)) and len(value) == 2
+            ):
+                errors.append(f'{prefix}.route.{field} 必须是地名或 [lat, lng]')
+        via = route.get('via', []) or []
+        if not isinstance(via, list):
+            errors.append(f'{prefix}.route.via 必须是列表')
+        for v_idx, value in enumerate(via, start=1):
+            if not isinstance(value, str) and not (
+                isinstance(value, (list, tuple)) and len(value) == 2
+            ):
+                errors.append(f'{prefix}.route.via[{v_idx}] 必须是地名或 [lat, lng]')
+        if merged_timeline:
+            if not isinstance(day.get('timeline'), list) or not day.get('timeline'):
+                errors.append(f'{prefix}: 合并模式必须提供 timeline')
+            if day.get('items'):
+                errors.append(f'{prefix}: 合并模式不能同时提供 items')
+        timeline = day.get('timeline', []) or []
+        if not isinstance(timeline, list):
+            errors.append(f'{prefix}.timeline 必须是列表')
+        else:
+            for item_idx, item in enumerate(timeline, start=1):
+                if not isinstance(item, dict) or not str(item.get('action', '')).strip():
+                    errors.append(f'{prefix}.timeline[{item_idx}].action 缺失')
+                    continue
+                if not item.get('time') and not item.get('duration'):
+                    errors.append(f'{prefix}.timeline[{item_idx}] 必须提供 time 或 duration')
+
+    pois = data.get('pois', []) or []
+    if not isinstance(pois, list):
+        errors.append('pois 必须是列表')
+    else:
+        seen_pois = set()
+        for idx, poi in enumerate(pois, start=1):
+            if not isinstance(poi, dict) or not str(poi.get('name', '')).strip():
+                errors.append(f'pois[{idx}].name 缺失')
+                continue
+            name = str(poi['name']).strip()
+            if name in seen_pois:
+                errors.append(f'景点名称重复: {name}')
+            seen_pois.add(name)
+            if poi.get('rank') not in ('major', 'minor'):
+                errors.append(f'pois[{idx}].rank 必须是 major 或 minor')
+            has_coord = (
+                ('lat' in poi and 'lng' in poi)
+                or (isinstance(poi.get('coord'), (list, tuple)) and len(poi['coord']) == 2)
+            )
+            if not has_coord and not poi.get('hint') and not poi.get('name'):
+                errors.append(f'pois[{idx}] 缺少坐标或可用于 geocode 的名称')
+            if strict_coordinates and poi.get('rank') == 'major':
+                if poi.get('coord_source') != 'osm':
+                    errors.append(f'{name}: 严格模式下主要景点必须使用 coord_source: osm')
+                osm_id = str(poi.get('osm_id', ''))
+                if not re.fullmatch(r'(node|way|relation)/\d+', osm_id):
+                    errors.append(f'{name}: 严格模式下必须提供 osm_id，例如 way/123')
+
+    return errors
+
+
+def verify_pois_with_osm(pois: list[dict], tolerance_km: float = 0.75) -> list[str]:
+    """按 OSM 对象编号核验主要景点坐标；严格模式下拒绝静默偏移。"""
+    pending = []
+    for poi in pois:
+        if poi.get('rank') != 'major':
+            continue
+        osm_id = str(poi.get('osm_id', ''))
+        if not osm_id:
+            continue
+        cached = _poi_verify_cache.get(osm_id)
+        if not cached:
+            pending.append(poi)
+
+    if pending:
+        ids = []
+        for poi in pending:
+            kind, number = poi['osm_id'].split('/', 1)
+            prefix = {'node': 'N', 'way': 'W', 'relation': 'R'}[kind]
+            ids.append(prefix + number)
+        url = 'https://nominatim.openstreetmap.org/lookup?' + urllib.parse.urlencode({
+            'osm_ids': ','.join(ids),
+            'format': 'jsonv2',
+        })
+        try:
+            req = urllib.request.Request(url, headers={
+                'User-Agent': 'Hermes-RouteMap/1.0',
+                'Accept-Language': 'zh-CN',
+            })
+            resp = urllib.request.urlopen(req, timeout=20)
+            rows = json.loads(resp.read().decode('utf-8'))
+            for row in rows:
+                prefix = {'node': 'N', 'way': 'W', 'relation': 'R'}.get(row.get('osm_type'))
+                if not prefix:
+                    continue
+                key = f"{row['osm_type']}/{row['osm_id']}"
+                _poi_verify_cache[key] = {
+                    'lat': round(float(row['lat']), 6),
+                    'lng': round(float(row['lon']), 6),
+                }
+            save_poi_verify_cache()
+        except Exception as e:
+            return [f'无法连接 OSM 核验景点坐标: {e}']
+
+    errors = []
+    for poi in pois:
+        if poi.get('rank') != 'major':
+            continue
+        osm_id = str(poi.get('osm_id', ''))
+        expected = _poi_verify_cache.get(osm_id)
+        if not expected:
+            errors.append(f"{poi.get('name', '?')}: 无法核验 {osm_id or '缺少 osm_id'}")
+            continue
+        lat = poi.get('lat', (poi.get('coord') or [None])[0])
+        lng = poi.get('lng', (poi.get('coord') or [None, None])[1])
+        if lat is None or lng is None:
+            errors.append(f"{poi['name']}: 严格模式下必须使用显式坐标")
+            continue
+        offset = _haversine_km([float(lat), float(lng)], [expected['lat'], expected['lng']])
+        if offset > tolerance_km:
+            errors.append(
+                f"{poi['name']}: 坐标偏离 OSM 对象 {offset:.2f}km，超过 {tolerance_km}km 阈值"
+            )
+    return errors
 
 
 # ─────────────────────────────────────────────
@@ -472,6 +697,13 @@ def resolve(yaml_path: str, output_path: str | None = None):
     print(f"\n📖 读取 YAML: {yaml_path}")
     with open(yaml_path, 'r', encoding='utf-8') as f:
         data = yaml.safe_load(f.read()) or {}
+
+    validation_errors = validate_trip_data(data)
+    if validation_errors:
+        print("❌ YAML 校验失败:")
+        for error in validation_errors:
+            print(f"  - {error}")
+        sys.exit(1)
     
     trip_meta = data.get('trip', {})
     days_data = data.get('days', [])
@@ -482,7 +714,21 @@ def resolve(yaml_path: str, output_path: str | None = None):
     title = trip_meta.get('title', '自驾路线图')
     subtitle = trip_meta.get('subtitle', '')
     basemap = trip_meta.get('basemap', 'light')
+    focus = trip_meta.get('focus')
+    driver_count = trip_meta.get('drivers', 1)
+    strict_coordinates = trip_meta.get('coordinate_verification') == 'strict'
+    timeline_mode = trip_meta.get('timeline_mode', 'split')
     start_date_str = trip_meta.get('start_date', '')
+
+    if strict_coordinates:
+        print("\n🔎 核验主要景点坐标...")
+        poi_errors = verify_pois_with_osm(pois_yaml)
+        if poi_errors:
+            print("❌ 景点坐标核验失败:")
+            for error in poi_errors:
+                print(f"  - {error}")
+            sys.exit(1)
+        print(f"  ✓ {sum(1 for poi in pois_yaml if poi.get('rank') == 'major')} 处主要景点通过 OSM 核验")
     
     # 解析起始日期
     start_date = None
@@ -619,6 +865,7 @@ def resolve(yaml_path: str, output_path: str | None = None):
         
         color = day_colors[idx]
         name = f'D{d}'
+        theme_html = day_theme_html(theme)
         
         # Resolve start/end/via from names or coordinates
         def resolve_coord(v):
@@ -634,11 +881,22 @@ def resolve(yaml_path: str, output_path: str | None = None):
         start = resolve_coord(route_data.get('start'))
         end = resolve_coord(route_data.get('end'))
         via_raw = route_data.get('via', []) or []
-        via = [resolve_coord(v) for v in via_raw if resolve_coord(v)]
+        via = []
+        for via_idx, via_value in enumerate(via_raw, start=1):
+            via_coord = resolve_coord(via_value)
+            if not via_coord:
+                print(f"❌ D{d} 途经点 {via_idx} 无法解析: {via_value}")
+                sys.exit(1)
+            via.append(via_coord)
+
+        if not start or not end:
+            print(f"❌ D{d} 起点或终点无法解析")
+            sys.exit(1)
+
+        day['_drivers'] = driver_count
         
         # Validate coordinates
-        if start and end:
-            all_warnings.extend(validate_route(start, end, via))
+        all_warnings.extend(validate_route(start, end, via))
         
         # Store resolved coords in day for validation
         day['_resolved_start'] = start
@@ -693,6 +951,7 @@ def resolve(yaml_path: str, output_path: str | None = None):
         if distance_manual:
             # YAML 写了的直接使用，不叠加 OSRM
             disttime = f"🚗 {distance_manual}"
+            map_distance = map_distance_label(distance_manual, distance_km)
         elif route_result and route_result['distance_km'] > 0:
             corrected_min = round(duration_min * 1.33)
             dist_display = f"{distance_km}km"
@@ -701,8 +960,10 @@ def resolve(yaml_path: str, output_path: str | None = None):
             m = corrected_min % 60
             time_display = f"{h}h" + (f"{m}" if m > 0 else "")
             disttime = f"🚗 {dist_display}·{time_display}"
+            map_distance = map_distance_label('', distance_km)
         else:
             disttime = ''
+            map_distance = map_distance_label('', 0)
         
         subtext = f'{city}全天' if day_type == 'local' else ''
         dx_data.append({
@@ -710,7 +971,7 @@ def resolve(yaml_path: str, output_path: str | None = None):
             "lat": round(dx_lat, 6),
             "lng": round(dx_lng, 6),
             "color": color,
-            "dist": disttime,
+            "dist": map_distance,
             "sub": subtext,
         })
         
@@ -775,22 +1036,36 @@ def resolve(yaml_path: str, output_path: str | None = None):
         tl = day.get('timeline', [])
         timelines.append(tl)
         timeline_html = ''
+        body_html = f'<ul class="day-items">{items_html}</ul>'
         if tl:
-            tl_items = '\n'.join(
-                f'<div class="tl-row"><span class="tl-time">{t.get("time","")}</span><span class="tl-action">{t.get("action","")}</span></div>'
-                for t in tl
-            )
-            timeline_html = f'''  <div class="timeline-wrap">
-    <div class="timeline-toggle" onclick="var n=this.nextElementSibling;n.style.display=n.style.display==='none'?'':'none';this.textContent=this.textContent==='📋 微观日志 ▼'?'📋 微观日志 ▶':'📋 微观日志 ▼';">📋 微观日志 ▼</div>
-    <div class="timeline" style="display:none;">
+            tl_rows = []
+            for t in tl:
+                duration = t.get('duration', '')
+                if duration:
+                    prefix = '预计' if t.get('kind') == 'visit' else '约'
+                    when = f'{prefix}{duration}'
+                    when_class = 'tl-time tl-duration'
+                else:
+                    when = t.get('time', '')
+                    when_class = 'tl-time'
+                tl_rows.append(
+                    f'<div class="tl-row"><span class="{when_class}">{when}</span><span class="tl-action">{t.get("action","")}</span></div>'
+                )
+            tl_items = '\n'.join(tl_rows)
+            if timeline_mode == 'merged':
+                body_html = f'<div class="timeline day-timeline">{tl_items}</div>'
+            else:
+                timeline_html = f'''  <div class="timeline-wrap">
+    <button class="timeline-toggle" type="button" aria-expanded="false" aria-controls="timeline-{idx + 1}">📋 微观日志 <span class="timeline-chevron">▼</span></button>
+    <div class="timeline" id="timeline-{idx + 1}" hidden>
       {tl_items}
     </div>
   </div>'''
         
         day_card_items.append(f'''  <div class="day-card card-{idx}">
     <div class="day-header"><span class="day-label" style="color:{color}">{day_label}{' · ' + date_str if date_str else ''}</span><span class="day-date">{disttime}</span></div>
-    <div class="day-route">{theme}</div>
-    <ul class="day-items">{items_html}</ul>
+    <div class="day-route">{theme_html}</div>
+    {body_html}
     {shuttle_note}
     {timeline_html}
   </div>''')
@@ -867,9 +1142,9 @@ def resolve(yaml_path: str, output_path: str | None = None):
     center_lng = round(lng_sum / total, 4) if total > 0 else 113.5
     
     # ── 5f. 底图 ──
-    tile_url = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+    tile_url = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
     if basemap == 'dark':
-        tile_url = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        tile_url = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
     
     # ── 5g. Stop CSS ──
     stop_css = ''
@@ -880,7 +1155,7 @@ def resolve(yaml_path: str, output_path: str | None = None):
             stop_css += f'  .stop-{i} .stop-dot {{ border-color: {color}; }} .stop-{i} .stop-line {{ background: linear-gradient(to bottom, {color}, {next_color}); }} .stop-{i} .stop-title {{ color: {color}; }}\n'
         else:
             stop_css += f'  .stop-{i} .stop-dot {{ border-color: {color}; }} .stop-{i} .stop-title {{ color: {color}; }}\n'
-    
+
     # ── 5h. Stats HTML ──
     sd = trip_meta.get('stats', {})
     stats_html = f'''<div class="stats">
@@ -918,6 +1193,7 @@ def resolve(yaml_path: str, output_path: str | None = None):
             "title": title,
             "subtitle": subtitle_ext,
             "basemap": basemap,
+            "focus": focus,
             "stats": sd,
         },
         "cities": city_pos_data,
@@ -965,7 +1241,7 @@ def resolve(yaml_path: str, output_path: str | None = None):
 
 def main():
     if len(sys.argv) < 2:
-        print("用法: python3.11 resolve.py trips/xxx.yaml [--output resolved/xxx.json]")
+        print("用法: python3 resolve.py trips/xxx.yaml [--output resolved/xxx.json]")
         sys.exit(1)
     
     yaml_path = sys.argv[1]

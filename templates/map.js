@@ -2,18 +2,31 @@
 // map.js — 线段碰撞检测（路线用线段而非散点）
 // ═══════════════════════════════════════════════════
 
-var map = L.map('map', { center: [{{CENTER_LAT}}, {{CENTER_LNG}}], zoom: 7, zoomControl: true, scrollWheelZoom: true, attributionControl: false });
-L.tileLayer('{{TILE_URL}}', { subdomains: 'abcd', maxZoom: 20 }).addTo(map);
-
-var standardTile = L.tileLayer('{{TILE_URL}}', { subdomains: 'abcd', maxZoom: 20 });
-var terrainTile = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 17 });
+var map = L.map('map', { center: [{{CENTER_LAT}}, {{CENTER_LNG}}], zoom: 7, zoomControl: true, scrollWheelZoom: true, attributionControl: true });
+window.routeMap = map;
+var tileAttribution = '&copy; <a href="https://www.esri.com/">Esri</a>';
+var standardTile = L.tileLayer('{{TILE_URL}}', { attribution: tileAttribution, maxZoom: 20, className: 'tile-standard' });
+var standardTransport = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, opacity: 0.36, className: 'tile-transport' });
+var terrainTile = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', { attribution: tileAttribution, maxZoom: 17, className: 'tile-terrain' });
 standardTile.addTo(map);
+standardTransport.addTo(map);
 document.querySelectorAll('.ls-btn').forEach(function(btn) {
   btn.addEventListener('click', function() {
-    document.querySelectorAll('.ls-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.ls-btn').forEach(function(b) {
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed', 'false');
+    });
     this.classList.add('active');
-    if (this.dataset.layer === 'standard') { map.removeLayer(terrainTile); standardTile.addTo(map); }
-    else { map.removeLayer(standardTile); terrainTile.addTo(map); }
+    this.setAttribute('aria-pressed', 'true');
+    if (this.dataset.layer === 'standard') {
+      map.removeLayer(terrainTile);
+      standardTile.addTo(map);
+      standardTransport.addTo(map);
+    } else {
+      map.removeLayer(standardTile);
+      map.removeLayer(standardTransport);
+      terrainTile.addTo(map);
+    }
   });
 });
 
@@ -74,11 +87,26 @@ var poiMajor = L.layerGroup();
 var poiMinor = L.layerGroup();
 for (var i = 0; i < majorSpots.length; i++) {
   var s = majorSpots[i];
-  poiMajor.addLayer(L.marker([s[0], s[1]], { icon: L.divIcon({ className: '', html: '<div style="display:flex;align-items:center;gap:3px;"><div style="width:6px;height:6px;background:'+s[2]+';border-radius:50%;flex-shrink:0;"></div><span style="font-size:12px;font-weight:700;color:'+s[2]+';white-space:nowrap;">'+s[3]+'</span></div>', iconSize: [40,28], iconAnchor: [s[4]+20, s[5]+14] }) }));
+  var dir = s[5] < 0 ? 'top' : (s[5] > 0 ? 'bottom' : (s[4] < 0 ? 'left' : 'right'));
+  var dot = L.circleMarker([s[0], s[1]], { radius: 4, color: s[2], weight: 2, fillColor: '#fff', fillOpacity: 1 });
+  dot.bindTooltip(s[3], {
+    permanent: true,
+    direction: dir,
+    className: 'poi-tooltip',
+    opacity: 1
+  });
+  poiMajor.addLayer(dot);
 }
 for (var i = 0; i < spots.length; i++) {
   var s = spots[i];
-  poiMinor.addLayer(L.marker([s[0], s[1]], { icon: L.divIcon({ className: '', html: '<div style="display:flex;align-items:center;gap:3px;"><div style="width:6px;height:6px;background:#3d7a4a;border-radius:50%;flex-shrink:0;"></div><span style="font-size:11px;font-weight:700;color:#3d7a4a;white-space:nowrap;">'+s[2]+'</span></div>', iconSize: [80,18], iconAnchor: [4,9] }) }));
+  var dot = L.circleMarker([s[0], s[1]], { radius: 3, color: '#3d7a4a', weight: 2, fillColor: '#fff', fillOpacity: 1 });
+  dot.bindTooltip(s[2], {
+    permanent: true,
+    direction: 'right',
+    className: 'poi-tooltip poi-tooltip-minor',
+    opacity: 1
+  });
+  poiMinor.addLayer(dot);
 }
 
 // ── 配置 ──
@@ -206,6 +234,25 @@ dxData.forEach(function(d){ab.extend([d.lat,d.lng]);});
 majorSpots.forEach(function(s){ab.extend([s[0],s[1]]);});
 spots.forEach(function(s){ab.extend([s[0],s[1]]);});
 map.fitBounds(ab,{padding:[50,50]});
+var overviewBounds = map.getBounds();
+var focusCfg = {{FOCUS_JSON}};
+var focusActive = false;
+var focusBtn = document.getElementById('focus-btn');
+if (focusCfg && focusCfg.center && focusCfg.zoom) {
+  focusBtn.style.display = 'block';
+  focusBtn.textContent = focusCfg.label || '聚焦路线';
+  focusBtn.addEventListener('click', function() {
+    focusActive = !focusActive;
+    focusBtn.setAttribute('aria-pressed', focusActive ? 'true' : 'false');
+    if (focusActive) {
+      focusBtn.textContent = '查看全程';
+      map.flyTo(focusCfg.center, focusCfg.zoom, {duration: 0.8});
+    } else {
+      focusBtn.textContent = focusCfg.label || '聚焦路线';
+      map.fitBounds(overviewBounds, {padding: [50, 50]});
+    }
+  });
+}
 
 // ── Zoom 处理器 ──
 function u() {
@@ -288,17 +335,33 @@ function toggleMapFullscreen() {
   var btn = document.getElementById('fullscreen-btn');
   btn.textContent = el.classList.contains('fullscreen') ? '✕' : '⛶';
   btn.title = el.classList.contains('fullscreen') ? '退出全屏' : '全屏浏览';
+  btn.setAttribute('aria-label', btn.title);
   // 延迟让 CSS transition 完成后刷新地图
   setTimeout(function(){ map.invalidateSize(); }, 350);
 }
+document.getElementById('fullscreen-btn').addEventListener('click', toggleMapFullscreen);
+
+// ── 微观日志展开／收起 ──
+document.querySelectorAll('.timeline-toggle').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var panel = document.getElementById(this.getAttribute('aria-controls'));
+    var expanded = this.getAttribute('aria-expanded') === 'true';
+    this.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    this.querySelector('.timeline-chevron').textContent = expanded ? '▼' : '▶';
+    panel.hidden = expanded;
+  });
+});
+
 // ESC 退出全屏
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
     var el = document.getElementById('map-section');
     if (el.classList.contains('fullscreen')) {
       el.classList.remove('fullscreen');
-      document.getElementById('fullscreen-btn').textContent = '⛶';
-      document.getElementById('fullscreen-btn').title = '全屏浏览';
+      var btn = document.getElementById('fullscreen-btn');
+      btn.textContent = '⛶';
+      btn.title = '全屏浏览';
+      btn.setAttribute('aria-label', '全屏浏览地图');
       setTimeout(function(){ map.invalidateSize(); }, 350);
     }
   }

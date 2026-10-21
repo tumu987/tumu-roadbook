@@ -1,9 +1,11 @@
-# 北疆14天自驾大环线 — 行程数据
+# [已归档] 北疆14天自驾大环线 — 旧版行程数据
+# 当前维护版本：trips/北疆.yaml
 trip:
   title: 🏛️ 北疆14天自驾大环线
   subtitle: 乌鲁木齐 · 喀纳斯 · 伊犁 · 独库公路
   dates: 建议6-10月
   basemap: light
+  drivers: 2
   stats:
     days: 14
     distance: "~5,000"
@@ -36,8 +38,8 @@ pois:
     rank: major
     iconAnchor: [0, 18]
   - name: 五彩滩
-    lat: 47.69600
-    lng: 86.81840
+    lat: 47.839136
+    lng: 86.671730
     rank: major
     iconAnchor: [-14, 0]
   - name: 乌尔禾魔鬼城

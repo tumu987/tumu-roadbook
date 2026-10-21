@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="YAML 驱动的自驾路线图集合">
+  <title>自驾路线册</title>
+  <style>
+    :root {
+      --paper: #faf8f5;
+      --ink: #3d3929;
+      --muted: #8f866e;
+      --line: #e9e4da;
+      --card: #fffdf9;
+      --accent: #c49a6c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(196,154,108,.12), transparent 32rem),
+        var(--paper);
+      font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif;
+    }
+    .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; padding: 64px 0 48px; }
+    header { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 24px; margin-bottom: 48px; }
+    .eyebrow { margin: 0 0 10px; color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .16em; }
+    h1 { margin: 0; font-family: Georgia, "Songti SC", serif; font-size: clamp(34px, 6vw, 58px); line-height: 1.05; letter-spacing: -.03em; }
+    .intro { max-width: 620px; margin: 16px 0 0; color: var(--muted); font-size: 15px; line-height: 1.8; }
+    .stamp {
+      width: 118px; height: 118px; border: 1px solid var(--line); border-radius: 50%;
+      display: grid; place-content: center; text-align: center; color: var(--muted);
+      font-family: Georgia, "Songti SC", serif; line-height: 1.5;
+    }
+    .stamp strong { display: block; color: var(--ink); font-size: 26px; font-weight: 500; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-bottom: 28px; border-block: 1px solid var(--line); }
+    .stat { padding: 18px 20px; }
+    .stat + .stat { border-left: 1px solid var(--line); }
+    .stat strong { display: block; font-size: 23px; font-weight: 600; }
+    .stat span { color: var(--muted); font-size: 12px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .trip {
+      position: relative; display: flex; min-height: 250px; flex-direction: column;
+      padding: 26px; overflow: hidden; color: inherit; text-decoration: none;
+      background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+    .trip::before { content: ""; position: absolute; inset: 0 0 auto; height: 4px; background: var(--trip-color); }
+    .trip::after {
+      content: ""; position: absolute; width: 190px; height: 190px; right: -74px; bottom: -90px;
+      border: 1px solid color-mix(in srgb, var(--trip-color) 35%, transparent);
+      border-radius: 50%; box-shadow: 0 0 0 24px color-mix(in srgb, var(--trip-color) 6%, transparent);
+    }
+    .trip:hover { transform: translateY(-4px); border-color: #d8cfbf; box-shadow: 0 16px 40px rgba(61,57,41,.09); }
+    .trip:focus-visible { outline: 3px solid color-mix(in srgb, var(--trip-color) 45%, transparent); outline-offset: 3px; }
+    .meta { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 12px; }
+    .tag { padding: 5px 9px; border: 1px solid color-mix(in srgb, var(--trip-color) 35%, var(--line)); border-radius: 999px; color: var(--trip-color); font-weight: 600; }
+    .trip h2 { position: relative; z-index: 1; margin: 28px 0 8px; font-size: 24px; line-height: 1.3; }
+    .trip p { position: relative; z-index: 1; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.75; }
+    .foot { position: relative; z-index: 1; display: flex; justify-content: space-between; gap: 16px; margin-top: auto; padding-top: 30px; font-size: 12px; color: var(--muted); }
+    .open { color: var(--trip-color); font-weight: 700; }
+    footer { margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    @media (max-width: 720px) {
+      .shell { width: min(100% - 28px, 620px); padding-top: 38px; }
+      header { grid-template-columns: 1fr; }
+      .stamp { display: none; }
+      .grid { grid-template-columns: 1fr; }
+      .trip { min-height: 230px; padding: 22px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .trip { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <p class="eyebrow">ROUTE NOTES · 自驾路线册</p>
+        <h1>沿着路，把风景串起来。</h1>
+        <p class="intro">从北京出发，向北去阿尔泰山，向西进川西高原，或用一个长周末探访浊漳河谷。每条路线都附有真实公路轨迹、每日节奏与关键提醒。</p>
+      </div>
+      <div class="stamp" aria-label="四条路线">
+        <span>ROUTES</span>
+        <strong>04</strong>
+        <span>记录在路</span>
+      </div>
+    </header>
+
+    <section class="stats" aria-label="路线册统计">
+      <div class="stat"><strong>32</strong><span>天的行程记录</span></div>
+      <div class="stat"><strong>4</strong><span>条完整路线</span></div>
+      <div class="stat"><strong>2–14</strong><span>天灵活行程</span></div>
+    </section>
+
+    <section class="grid" aria-label="路线列表">
+      <a class="trip" href="zhuozhang-4d.html" style="--trip-color:#c96b55">
+        <div class="meta"><span>山西 · 浊漳河谷</span><span class="tag">4天3宿</span></div>
+        <h2>浊漳河谷古建环线</h2>
+        <p>北京往返，两晚平顺。以天台庵、原起寺、龙门寺和大云院为骨架，把五代木构与河谷村落串成一个闭环。</p>
+        <div class="foot"><span>约 1,330 km · 2 位主驾</span><span class="open">打开路线 →</span></div>
+      </a>
+
+      <a class="trip" href="川西.html" style="--trip-color:#3f8d73">
+        <div class="meta"><span>四川 · 川西小环线</span><span class="tag">7天</span></div>
+        <h2>雪山、草原与藏寨</h2>
+        <p>成都出发，经康定、新都桥、丹巴与四姑娘山。路线同时标注高海拔跃升，方便安排适应节奏。</p>
+        <div class="foot"><span>约 1,100 km · 高海拔</span><span class="open">打开路线 →</span></div>
+      </a>
+
+      <a class="trip" href="北疆.html" style="--trip-color:#5678aa">
+        <div class="meta"><span>新疆 · 北疆大环线</span><span class="tag">14天</span></div>
+        <h2>阿勒泰到伊犁的全景巡礼</h2>
+        <p>从乌鲁木齐经可可托海、喀纳斯、赛里木湖到独库公路，用十四天展开一张北疆大尺度路线图。</p>
+        <div class="foot"><span>约 3,000 km · 长途环线</span><span class="open">打开路线 →</span></div>
+      </a>
+
+      <a class="trip" href="jindongnan.html" style="--trip-color:#b18445">
+        <div class="meta"><span>山西 · 晋东南</span><span class="tag">7天</span></div>
+        <h2>上党古建深度巡礼</h2>
+        <p>从长治与河谷延伸到高平、晋城，集中收录彩塑、壁画、宋金木构与古堡，是浊漳河谷路线的完整版。</p>
+        <div class="foot"><span>约 2,200 km · 古建主题</span><span class="open">打开路线 →</span></div>
+      </a>
+    </section>
+
+    <footer>Tumu Roadbook v0.1.8 · 路线由 YAML 数据生成 · 出发前请再次确认文保点开放时间、道路通行与天气情况。</footer>
+  </main>
+</body>
+</html>

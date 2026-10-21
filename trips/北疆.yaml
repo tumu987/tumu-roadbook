@@ -9,6 +9,7 @@ trip:
   dates: 7-8月
   start_date: "2026-07-18"
   basemap: light
+  drivers: 2
   stats:
     days: 14
     distance: "~3,000"
@@ -38,7 +39,7 @@ pois:
     rank: major
     iconAnchor: [0, -20]
   - name: 五彩滩
-    coord: [48.323, 86.835]
+    coord: [47.839136, 86.671730]
     rank: major
     iconAnchor: [0, -20]
   - name: 观鱼台

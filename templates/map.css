@@ -22,10 +22,28 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 .map-section { position: relative; background: #fff; border: 1px solid #f0ede6; border-radius: 16px; margin-bottom: 36px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.04); transition: all .3s ease; }
 .map-section.fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; border-radius: 0; margin: 0; border: none; }
 .map-section.fullscreen #map { height: 100vh !important; border-radius: 0; }
-#map { height: 500px; width: 100%; background: #faf8f5; border-radius: 0; }
+#map { height: 500px; width: 100%; background: #f7f5f0; border-radius: 0; }
+#map .tile-standard { filter: saturate(0.25) contrast(0.9) brightness(1.03); }
+#map .tile-transport { filter: grayscale(1) contrast(0.72) brightness(1.04); }
+.leaflet-tooltip.poi-tooltip {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #8b5e3c;
+  font: 700 12px/1.3 'Noto Sans SC', system-ui, sans-serif;
+  white-space: nowrap;
+  text-shadow: 0 0 3px #fff, 0 0 6px #fff, 0 0 9px #fff;
+}
+.leaflet-tooltip.poi-tooltip::before { display: none; }
+.leaflet-tooltip.poi-tooltip-minor { color: #3d7a4a; font-size: 11px; }
 #fullscreen-btn { position: absolute; top: 12px; right: 12px; z-index: 1001; width: 36px; height: 36px; border-radius: 8px; border: 1px solid #f0ede6; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: #7a7258; transition: all .15s; user-select: none; }
 #fullscreen-btn:hover { background: #efece4; color: #3d3929; }
 .map-section.fullscreen #fullscreen-btn { position: fixed; top: 16px; right: 16px; z-index: 10000; }
+#focus-btn { display: none; position: absolute; top: 56px; right: 12px; z-index: 1001; border: 1px solid #f0ede6; border-radius: 8px; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); cursor: pointer; padding: 7px 10px; color: #7a7258; font: 600 12px/1 'Noto Sans SC', system-ui, sans-serif; transition: all .15s; }
+#focus-btn:hover, #focus-btn[aria-pressed="true"] { background: #efece4; color: #3d3929; }
+.map-section.fullscreen #focus-btn { position: fixed; top: 60px; right: 16px; z-index: 10000; }
 #layer-switch { position: absolute; bottom: 12px; right: 12px; z-index: 1000; display: flex; gap: 0; background: rgba(255,255,255,0.92); border: 1px solid #f0ede6; border-radius: 8px; overflow: hidden; backdrop-filter: blur(8px); }
 .map-section.fullscreen #layer-switch { position: fixed; bottom: 16px; right: 16px; z-index: 10000; }
 .ls-btn { padding: 6px 12px; font-size: 12px; cursor: pointer; color: #a0987a; transition: all .15s; user-select: none; background: transparent; border: none; font-family: inherit; }
@@ -65,6 +83,9 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 .day-date { font-size: 12px; color: #a0987a; }
 .highlight { color: #c49a6c; font-weight: 600; }
 .day-route { font-size: 14px; color: #c49a6c; margin-bottom: 8px; }
+.day-route-path { color: #5d7f91; font-weight: 600; }
+.day-route-separator { color: #b8b09a; }
+.day-route-focus { color: #a66b35; font-weight: 500; }
 .day-items { list-style: none; font-size: 13px; line-height: 1.7; color: #5a5240; }
 .day-items li::before { content: '\25b8 '; color: #fbbf24; }
 
@@ -74,12 +95,18 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 .day-shuttle-note { margin-top: 8px; padding: 6px 10px; background: #fff8f0; border-left: 3px solid #e8a838; border-radius: 4px; font-size: 12px; color: #7a5a20; }
 /* 微观日志 */
 .timeline-wrap { margin-top: 10px; }
-.timeline-toggle { cursor: pointer; font-size: 12px; color: #7a7258; user-select: none; padding: 4px 0; }
+.timeline-toggle { cursor: pointer; font: inherit; font-size: 12px; color: #7a7258; user-select: none; padding: 4px 0; border: 0; background: transparent; }
 .timeline-toggle:hover { color: #3d3929; }
 .timeline { border-left: 2px solid #e8e4da; margin-left: 4px; padding-left: 12px; }
 .tl-row { display: flex; gap: 8px; padding: 3px 0; font-size: 12px; line-height: 1.5; }
 .tl-time { color: #b8b09a; font-family: monospace; flex-shrink: 0; min-width: 5em; }
 .tl-action { color: #5a5240; }
+.day-timeline { margin: 14px 0 2px; padding-left: 14px; border-left-color: #ddd6c8; }
+.day-timeline .tl-row { align-items: baseline; padding: 7px 0; border-bottom: 1px solid #f2eee7; }
+.day-timeline .tl-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.day-timeline .tl-time { color: #a66b35; font-weight: 600; min-width: 7.6em; }
+.day-timeline .tl-duration { color: #8c8170; font-weight: 500; }
+.day-timeline .tl-action { color: #5a5240; }
 
 @media (max-width: 640px) { #map { height: 280px; touch-action: pan-y; } }
 @media (max-width: 640px) { .container { padding: 20px 16px; } header h1 { font-size: 22px; } .stop { gap: 12px; } .stop-title { font-size: 14px; } .day-cards { grid-template-columns: 1fr; } .day-label{font-size:16px!important} .day-date{font-size:13px!important} .day-route{font-size:14px!important} .day-items{font-size:14px!important} }

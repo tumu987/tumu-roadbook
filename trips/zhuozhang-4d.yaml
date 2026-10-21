@@ -1,0 +1,288 @@
+# 北京往返 · 浊漳河谷四天三宿古建自驾
+trip:
+  title: 🏛️ 浊漳河谷 · 四天三宿
+  subtitle: 北京往返 · 天台庵 · 原起寺 · 龙门寺 · 大云院 · 长治观音堂
+  dates: 四天三宿
+  basemap: light
+  drivers: 2
+  coordinate_verification: strict
+  timeline_mode: merged
+  focus:
+    label: 聚焦河谷
+    center: [36.29, 113.40]
+    zoom: 10
+  stats:
+    days: 4
+    distance: "1,300"
+    heritage: "8"
+    people: 2
+  colors:
+    D1: '#d95c4a'
+    D2: '#d99a2b'
+    D3: '#2f8f6c'
+    D4: '#5675b9'
+
+cities:
+  北京: [39.9042, 116.4074]
+  平顺: [36.2000, 113.4390]
+  长治: [36.1910, 113.1160]
+
+pois:
+  - name: 天台庵
+    lat: 36.383242
+    lng: 113.398436
+    rank: major
+    iconAnchor: [-14, 0]
+    coord_source: osm
+    osm_id: node/5256332104
+    verified_at: "2026-10-21"
+  - name: 原起寺
+    lat: 36.353334
+    lng: 113.425748
+    rank: major
+    iconAnchor: [0, 18]
+    coord_source: osm
+    osm_id: node/5256251859
+    verified_at: "2026-10-21"
+  - name: 淳化寺
+    lat: 36.353256
+    lng: 113.586226
+    rank: major
+    iconAnchor: [0, -20]
+    coord_source: osm
+    osm_id: way/1449573449
+    verified_at: "2026-10-21"
+  - name: 龙门寺
+    lat: 36.390227
+    lng: 113.623042
+    rank: major
+    iconAnchor: [0, -20]
+    coord_source: osm
+    osm_id: way/1252171732
+    verified_at: "2026-10-21"
+  - name: 大云院
+    lat: 36.367072
+    lng: 113.438718
+    rank: major
+    iconAnchor: [0, 18]
+    coord_source: osm
+    osm_id: way/543740693
+    verified_at: "2026-10-21"
+  - name: 长治观音堂
+    lat: 36.227635
+    lng: 113.076745
+    rank: major
+    iconAnchor: [0, -20]
+    coord_source: osm
+    osm_id: way/1157444902
+    verified_at: "2026-10-21"
+  - name: 上党门
+    lat: 36.187171
+    lng: 113.100345
+    rank: major
+    iconAnchor: [0, 18]
+    coord_source: osm
+    osm_id: way/1171947665
+    verified_at: "2026-10-21"
+
+days:
+  - day: 1
+    label: "D1"
+    day_type: transit
+    city: 平顺
+    theme: "北京 → 石家庄 → 平顺"
+    route_class: main
+    route:
+      start: [39.9042, 116.4074]
+      via: [[38.0428, 114.5149]]
+      end: [36.2000, 113.4390]
+    stop_tags:
+      - "🏨 平顺 2 晚"
+      - "🚗 双驾优先"
+    tips:
+      - "🛣️ 首日约 570km、净驾驶 7h 左右；建议两人轮驾"
+      - "📱 提前下载山西离线地图，太行山区信号断续"
+      - "⛽ 进入平顺前加满油，第二天不绕回县城加油"
+    timeline:
+      - time: "06:30"
+        action: "从住处出发，早餐与午餐干粮提前备好"
+        kind: fixed
+      - duration: "3小时"
+        action: "京港澳高速南下，服务区灵活休息"
+        kind: drive
+      - duration: "1小时"
+        action: "午餐、休息与换驾"
+        kind: meal
+      - duration: "4小时30分钟"
+        action: "继续前往平顺，按疲劳程度增加休息"
+        kind: drive
+      - time: "约15:30"
+        action: "抵达平顺县城，入住第 1 晚"
+        kind: anchor
+      - duration: "1小时"
+        action: "县城晚餐、补给，确认次日文保点开放情况"
+        kind: meal
+
+  - day: 2
+    label: "D2"
+    day_type: transit
+    city: 平顺
+    theme: "浊漳河谷古建闭环 · 五处国保"
+    route_class: main
+    route:
+      start: [36.2030, 113.4390]
+      via:
+        - [36.367072, 113.438718]
+        - [36.383242, 113.398436]
+        - [36.353334, 113.425748]
+        - [36.353256, 113.586226]
+        - [36.390227, 113.623042]
+      end: [36.1990, 113.4400]
+    stop_tags:
+      - "天台庵"
+      - "原起寺"
+      - "淳化寺"
+      - "龙门寺"
+      - "大云院"
+    pois:
+      - name: 天台庵
+        coord: [36.383242, 113.398436]
+        rank: major
+      - name: 原起寺
+        coord: [36.353334, 113.425748]
+        rank: major
+      - name: 淳化寺
+        coord: [36.353256, 113.586226]
+        rank: major
+      - name: 龙门寺
+        coord: [36.390227, 113.623042]
+        rank: major
+      - name: 大云院
+        coord: [36.367072, 113.438718]
+        rank: major
+    tips:
+      - "🔦 殿内普遍无照明，带小手电，禁用闪光灯"
+      - "💰 备 10-20 元零钱，部分文保点需联系文保员开门"
+      - "📞 出发前逐一确认开放；午休时段可能暂时关门"
+      - "🌧️ 河谷道路雨后湿滑，窄路会车减速"
+    timeline:
+      - time: "08:00"
+        action: "从平顺县城出发"
+        kind: fixed
+      - duration: "40分钟"
+        action: "平顺 → 大云院"
+        kind: drive
+      - duration: "30分钟"
+        action: "大云院：五代壁画，殿内慢看"
+        kind: visit
+      - duration: "20分钟"
+        action: "大云院 → 天台庵"
+        kind: drive
+      - duration: "40分钟"
+        action: "天台庵：五代木构，重点看斗栱与梁架"
+        kind: visit
+      - duration: "15分钟"
+        action: "天台庵 → 原起寺"
+        kind: drive
+      - duration: "35分钟"
+        action: "原起寺：宋塔、浊漳河谷取景"
+        kind: visit
+      - duration: "30分钟"
+        action: "原起寺 → 淳化寺"
+        kind: drive
+      - duration: "30分钟"
+        action: "淳化寺：金代大殿"
+        kind: visit
+      - duration: "10分钟"
+        action: "淳化寺 → 龙门寺"
+        kind: drive
+      - duration: "1小时"
+        action: "龙门寺：六朝木构于一寺"
+        kind: visit
+      - duration: "1小时"
+        action: "石城村午餐与休息"
+        kind: meal
+      - duration: "40分钟"
+        action: "回到平顺县城，入住第 2 晚"
+        kind: drive
+
+  - day: 3
+    label: "D3"
+    day_type: transit
+    city: 长治
+    theme: "平顺 → 长治 · 明代悬塑"
+    route_class: main
+    route:
+      start: [36.2000, 113.4390]
+      via: [[36.227635, 113.076745]]
+      end: [36.1910, 113.1160]
+    stop_tags:
+      - "长治观音堂"
+      - "上党门"
+      - "🏨 长治"
+    pois:
+      - name: 长治观音堂
+        coord: [36.227635, 113.076745]
+        rank: major
+      - name: 上党门
+        coord: [36.187171, 113.100345]
+        rank: major
+    tips:
+      - "🕘 观音堂午间可能闭门，先看再吃饭"
+      - "🚙 当日车程不长，给古建参观留足时间"
+      - "🧥 十月底早晚温差大，古建殿内更凉"
+    timeline:
+      - time: "08:30"
+        action: "从平顺退房出发"
+        kind: fixed
+      - duration: "1小时"
+        action: "驶向长治"
+        kind: drive
+      - duration: "1小时"
+        action: "长治观音堂，看明代悬塑"
+        kind: visit
+      - duration: "15分钟"
+        action: "观音堂 → 老城午餐点"
+        kind: drive
+      - duration: "1小时"
+        action: "市区午餐"
+        kind: meal
+      - duration: "45分钟"
+        action: "上党门与老城散步"
+        kind: visit
+      - duration: "15分钟"
+        action: "前往酒店，入住长治市区第 3 晚"
+        kind: drive
+
+  - day: 4
+    label: "D4"
+    day_type: transit
+    city: 北京
+    theme: "长治 → 石家庄 → 北京"
+    route_class: main
+    route:
+      start: [36.1910, 113.1160]
+      via: [[38.0428, 114.5149]]
+      end: [39.9042, 116.4074]
+    stop_tags:
+      - "🏠 返程北京"
+    tips:
+      - "🌅 早间向东行驶可能迎光，备好偏光镜"
+      - "🚦 周日/节假日返京车流大，预留 1h 缓冲"
+      - "🧾 四天总里程约 1,300km，返程后做一次车辆检查"
+    timeline:
+      - time: "07:30"
+        action: "长治出发，早餐在酒店或出发前解决"
+        kind: fixed
+      - duration: "3小时"
+        action: "沿高速返京，服务区灵活休息与换驾"
+        kind: drive
+      - duration: "1小时"
+        action: "午餐，继续返京"
+        kind: meal
+      - duration: "4小时"
+        action: "继续返京，按进京拥堵情况调整休息"
+        kind: drive
+      - time: "约16:00"
+        action: "预计抵达北京"
+        kind: anchor

@@ -21,10 +21,11 @@
 
 <div class="map-section" id="map-section">
   <div id="map"></div>
-  <button id="fullscreen-btn" onclick="toggleMapFullscreen()" title="全屏浏览">⛶</button>
-  <div id="layer-switch">
-    <span class="ls-btn active" data-layer="standard">标准</span>
-    <span class="ls-btn" data-layer="terrain">地形</span>
+  <button id="fullscreen-btn" type="button" aria-label="全屏浏览地图" title="全屏浏览">⛶</button>
+  <button id="focus-btn" type="button" aria-pressed="false">聚焦河谷</button>
+  <div id="layer-switch" role="group" aria-label="地图图层">
+    <button class="ls-btn active" type="button" data-layer="standard" aria-pressed="true">标准</button>
+    <button class="ls-btn" type="button" data-layer="terrain" aria-pressed="false">地形</button>
   </div>
   <div id="zoom-display">Zoom 5</div>
 </div>
@@ -40,7 +41,7 @@
 {{CARDS_HTML}}
 </div>
 
-<div class="footer"></div>
+<div class="footer">{{FOOTER_HTML}}</div>
 </div>
 
 {{LEAFLET_JS}}

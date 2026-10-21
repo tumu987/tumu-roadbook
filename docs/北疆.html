@@ -691,10 +691,28 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 .map-section { position: relative; background: #fff; border: 1px solid #f0ede6; border-radius: 16px; margin-bottom: 36px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.04); transition: all .3s ease; }
 .map-section.fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; border-radius: 0; margin: 0; border: none; }
 .map-section.fullscreen #map { height: 100vh !important; border-radius: 0; }
-#map { height: 500px; width: 100%; background: #faf8f5; border-radius: 0; }
+#map { height: 500px; width: 100%; background: #f7f5f0; border-radius: 0; }
+#map .tile-standard { filter: saturate(0.25) contrast(0.9) brightness(1.03); }
+#map .tile-transport { filter: grayscale(1) contrast(0.72) brightness(1.04); }
+.leaflet-tooltip.poi-tooltip {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #8b5e3c;
+  font: 700 12px/1.3 'Noto Sans SC', system-ui, sans-serif;
+  white-space: nowrap;
+  text-shadow: 0 0 3px #fff, 0 0 6px #fff, 0 0 9px #fff;
+}
+.leaflet-tooltip.poi-tooltip::before { display: none; }
+.leaflet-tooltip.poi-tooltip-minor { color: #3d7a4a; font-size: 11px; }
 #fullscreen-btn { position: absolute; top: 12px; right: 12px; z-index: 1001; width: 36px; height: 36px; border-radius: 8px; border: 1px solid #f0ede6; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: #7a7258; transition: all .15s; user-select: none; }
 #fullscreen-btn:hover { background: #efece4; color: #3d3929; }
 .map-section.fullscreen #fullscreen-btn { position: fixed; top: 16px; right: 16px; z-index: 10000; }
+#focus-btn { display: none; position: absolute; top: 56px; right: 12px; z-index: 1001; border: 1px solid #f0ede6; border-radius: 8px; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); cursor: pointer; padding: 7px 10px; color: #7a7258; font: 600 12px/1 'Noto Sans SC', system-ui, sans-serif; transition: all .15s; }
+#focus-btn:hover, #focus-btn[aria-pressed="true"] { background: #efece4; color: #3d3929; }
+.map-section.fullscreen #focus-btn { position: fixed; top: 60px; right: 16px; z-index: 10000; }
 #layer-switch { position: absolute; bottom: 12px; right: 12px; z-index: 1000; display: flex; gap: 0; background: rgba(255,255,255,0.92); border: 1px solid #f0ede6; border-radius: 8px; overflow: hidden; backdrop-filter: blur(8px); }
 .map-section.fullscreen #layer-switch { position: fixed; bottom: 16px; right: 16px; z-index: 10000; }
 .ls-btn { padding: 6px 12px; font-size: 12px; cursor: pointer; color: #a0987a; transition: all .15s; user-select: none; background: transparent; border: none; font-family: inherit; }
@@ -748,6 +766,9 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 .day-date { font-size: 12px; color: #a0987a; }
 .highlight { color: #c49a6c; font-weight: 600; }
 .day-route { font-size: 14px; color: #c49a6c; margin-bottom: 8px; }
+.day-route-path { color: #5d7f91; font-weight: 600; }
+.day-route-separator { color: #b8b09a; }
+.day-route-focus { color: #a66b35; font-weight: 500; }
 .day-items { list-style: none; font-size: 13px; line-height: 1.7; color: #5a5240; }
 .day-items li::before { content: '\25b8 '; color: #fbbf24; }
 
@@ -757,12 +778,18 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 .day-shuttle-note { margin-top: 8px; padding: 6px 10px; background: #fff8f0; border-left: 3px solid #e8a838; border-radius: 4px; font-size: 12px; color: #7a5a20; }
 /* 微观日志 */
 .timeline-wrap { margin-top: 10px; }
-.timeline-toggle { cursor: pointer; font-size: 12px; color: #7a7258; user-select: none; padding: 4px 0; }
+.timeline-toggle { cursor: pointer; font: inherit; font-size: 12px; color: #7a7258; user-select: none; padding: 4px 0; border: 0; background: transparent; }
 .timeline-toggle:hover { color: #3d3929; }
 .timeline { border-left: 2px solid #e8e4da; margin-left: 4px; padding-left: 12px; }
 .tl-row { display: flex; gap: 8px; padding: 3px 0; font-size: 12px; line-height: 1.5; }
 .tl-time { color: #b8b09a; font-family: monospace; flex-shrink: 0; min-width: 5em; }
 .tl-action { color: #5a5240; }
+.day-timeline { margin: 14px 0 2px; padding-left: 14px; border-left-color: #ddd6c8; }
+.day-timeline .tl-row { align-items: baseline; padding: 7px 0; border-bottom: 1px solid #f2eee7; }
+.day-timeline .tl-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.day-timeline .tl-time { color: #a66b35; font-weight: 600; min-width: 7.6em; }
+.day-timeline .tl-duration { color: #8c8170; font-weight: 500; }
+.day-timeline .tl-action { color: #5a5240; }
 
 @media (max-width: 640px) { #map { height: 280px; touch-action: pan-y; } }
 @media (max-width: 640px) { .container { padding: 20px 16px; } header h1 { font-size: 22px; } .stop { gap: 12px; } .stop-title { font-size: 14px; } .day-cards { grid-template-columns: 1fr; } .day-label{font-size:16px!important} .day-date{font-size:13px!important} .day-route{font-size:14px!important} .day-items{font-size:14px!important} }
@@ -781,10 +808,11 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 
 <div class="map-section" id="map-section">
   <div id="map"></div>
-  <button id="fullscreen-btn" onclick="toggleMapFullscreen()" title="全屏浏览">⛶</button>
-  <div id="layer-switch">
-    <span class="ls-btn active" data-layer="standard">标准</span>
-    <span class="ls-btn" data-layer="terrain">地形</span>
+  <button id="fullscreen-btn" type="button" aria-label="全屏浏览地图" title="全屏浏览">⛶</button>
+  <button id="focus-btn" type="button" aria-pressed="false">聚焦河谷</button>
+  <div id="layer-switch" role="group" aria-label="地图图层">
+    <button class="ls-btn active" type="button" data-layer="standard" aria-pressed="true">标准</button>
+    <button class="ls-btn" type="button" data-layer="terrain" aria-pressed="false">地形</button>
   </div>
   <div id="zoom-display">Zoom 5</div>
 </div>
@@ -924,7 +952,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 <div class="day-cards">
   <div class="day-card card-0">
     <div class="day-header"><span class="day-label" style="color:#e74c3c">D1 · 7月18日 周六</span><span class="day-date"></span></div>
-    <div class="day-route">乌鲁木齐 · 集结出发</div>
+    <div class="day-route"><span class="day-route-path">乌鲁木齐</span><span class="day-route-separator"> · </span><span class="day-route-focus">集结出发</span></div>
     <ul class="day-items"><li>✈️ 各地抵达乌鲁木齐</li>
 <li>租车提车，采购补给</li>
 <li>🏨 宿乌鲁木齐</li></ul>
@@ -933,7 +961,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-1">
     <div class="day-header"><span class="day-label" style="color:#f39c12">D2 · 7月19日 周日</span><span class="day-date">🚗 480km · 6h</span></div>
-    <div class="day-route">乌鲁木齐 → 天山天池 → 富蕴</div>
+    <div class="day-route"><span class="day-route-path">乌鲁木齐 → 天山天池 → 富蕴</span></div>
     <ul class="day-items"><li>早 8:00 出发，前往天山天池</li>
 <li>天山天池游览（2-3h）</li>
 <li>穿越古尔班通古特沙漠</li>
@@ -943,7 +971,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-2">
     <div class="day-header"><span class="day-label" style="color:#27ae60">D3 · 7月20日 周一</span><span class="day-date">🚗 300km · 4.5h</span></div>
-    <div class="day-route">富蕴 → 可可托海 → 布尔津</div>
+    <div class="day-route"><span class="day-route-path">富蕴 → 可可托海 → 布尔津</span></div>
     <ul class="day-items"><li>早 9:00 出发，可可托海国家地质公园</li>
 <li>神钟山 · 额尔齐斯河大峡谷</li>
 <li>下午前往布尔津</li>
@@ -954,7 +982,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-3">
     <div class="day-header"><span class="day-label" style="color:#00bcd4">D4 · 7月21日 周二</span><span class="day-date">🚗 140km · 3h</span></div>
-    <div class="day-route">布尔津 → 喀纳斯</div>
+    <div class="day-route"><span class="day-route-path">布尔津 → 喀纳斯</span></div>
     <ul class="day-items"><li>早 10:00 出发，北上喀纳斯</li>
 <li>沿途阿尔泰山风光</li>
 <li>🏨 宿喀纳斯老村/新村</li></ul>
@@ -963,7 +991,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-4">
     <div class="day-header"><span class="day-label" style="color:#3f51b5">D5 · 7月22日 周三</span><span class="day-date">🚗 景区游览</span></div>
-    <div class="day-route">喀纳斯全天 · 三湾 · 观鱼台</div>
+    <div class="day-route"><span class="day-route-path">喀纳斯全天</span><span class="day-route-separator"> · </span><span class="day-route-focus">三湾 · 观鱼台</span></div>
     <ul class="day-items"><li>早起乘区间车到观鱼台（俯瞰喀纳斯湖全景）</li>
 <li>神仙湾晨雾</li>
 <li>月亮湾 → 卧龙湾徒步（经典 2km 栈道）</li>
@@ -973,7 +1001,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-5">
     <div class="day-header"><span class="day-label" style="color:#9c27b0">D6 · 7月23日 周四</span><span class="day-date">🚗 60km · 2h</span></div>
-    <div class="day-route">喀纳斯 → 禾木村</div>
+    <div class="day-route"><span class="day-route-path">喀纳斯 → 禾木村</span></div>
     <ul class="day-items"><li>上午喀纳斯湖畔漫步</li>
 <li>中午出发前往禾木</li>
 <li>禾木村自由漫步</li>
@@ -983,7 +1011,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-6">
     <div class="day-header"><span class="day-label" style="color:#e91e63">D7 · 7月24日 周五</span><span class="day-date">🚗 450km · 6h</span></div>
-    <div class="day-route">禾木晨雾 → 布尔津 → 魔鬼城 → 克拉玛依</div>
+    <div class="day-route"><span class="day-route-path">禾木晨雾 → 布尔津 → 魔鬼城 → 克拉玛依</span></div>
     <ul class="day-items"><li>🌄 禾木观景台晨雾（6:00-8:00）</li>
 <li>经布尔津，沿额尔齐斯河谷南下</li>
 <li>乌尔禾魔鬼城（雅丹地貌）</li>
@@ -994,7 +1022,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-7">
     <div class="day-header"><span class="day-label" style="color:#00acc1">D8 · 7月25日 周六</span><span class="day-date">🚗 300km · 3.5h</span></div>
-    <div class="day-route">克拉玛依 → 赛里木湖</div>
+    <div class="day-route"><span class="day-route-path">克拉玛依 → 赛里木湖</span></div>
     <ul class="day-items"><li>上午从克拉玛依出发</li>
 <li>下午抵达赛里木湖</li>
 <li>赛里木湖环湖自驾（东门进南门出）</li>
@@ -1004,7 +1032,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-8">
     <div class="day-header"><span class="day-label" style="color:#ff9800">D9 · 7月26日 周日</span><span class="day-date">🚗 150km · 2.5h</span></div>
-    <div class="day-route">赛里木湖 → 果子沟大桥 → 霍城薰衣草 → 伊宁</div>
+    <div class="day-route"><span class="day-route-path">赛里木湖 → 果子沟大桥 → 霍城薰衣草 → 伊宁</span></div>
     <ul class="day-items"><li>赛里木湖晨景</li>
 <li>果子沟大桥（网红打卡）</li>
 <li>霍城薰衣草庄园（6月中-7月花期）</li>
@@ -1014,7 +1042,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-9">
     <div class="day-header"><span class="day-label" style="color:#795548">D10 · 7月27日 周一</span><span class="day-date">🚗 260km · 5h</span></div>
-    <div class="day-route">伊宁 → 伊昭公路 → 昭苏 → 特克斯</div>
+    <div class="day-route"><span class="day-route-path">伊宁 → 伊昭公路 → 昭苏 → 特克斯</span></div>
     <ul class="day-items"><li>伊昭公路（白石峰 · 小独库）</li>
 <li>昭苏油菜花海/天马文化园</li>
 <li>🏨 宿特克斯八卦城</li></ul>
@@ -1023,7 +1051,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-10">
     <div class="day-header"><span class="day-label" style="color:#607d8b">D11 · 7月28日 周二</span><span class="day-date">🚗 250km · 4h</span></div>
-    <div class="day-route">特克斯 → 喀拉峻草原 → 那拉提</div>
+    <div class="day-route"><span class="day-route-path">特克斯 → 喀拉峻草原 → 那拉提</span></div>
     <ul class="day-items"><li>喀拉峻草原（世界自然遗产）</li>
 <li>阔克苏大峡谷 · 人体草原</li>
 <li>傍晚抵达那拉提镇</li>
@@ -1033,7 +1061,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-11">
     <div class="day-header"><span class="day-label" style="color:#8bc34a">D12 · 7月29日 周三</span><span class="day-date">🚗 90km · 2h</span></div>
-    <div class="day-route">那拉提草原 → 巴音布鲁克</div>
+    <div class="day-route"><span class="day-route-path">那拉提草原 → 巴音布鲁克</span></div>
     <ul class="day-items"><li>上午那拉提空中草原</li>
 <li>午后沿独库公路中段南下</li>
 <li>🌅 巴音布鲁克九曲十八弯日落</li>
@@ -1043,7 +1071,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-12">
     <div class="day-header"><span class="day-label" style="color:#ff5722">D13 · 7月30日 周四</span><span class="day-date">🚗 300km · 5h</span></div>
-    <div class="day-route">巴音布鲁克 → 独库公路北段 → 独山子</div>
+    <div class="day-route"><span class="day-route-path">巴音布鲁克 → 独库公路北段 → 独山子</span></div>
     <ul class="day-items"><li>独库公路北段（全程精华）</li>
 <li>乔尔玛烈士陵园（致敬筑路人）</li>
 <li>哈希勒根达坂 3390m</li>
@@ -1053,7 +1081,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
   <div class="day-card card-13">
     <div class="day-header"><span class="day-label" style="color:#9e9e9e">D14 · 7月31日 周五</span><span class="day-date">🚗 250km · 3h</span></div>
-    <div class="day-route">独山子 → 乌鲁木齐 → 返程</div>
+    <div class="day-route"><span class="day-route-path">独山子 → 乌鲁木齐 → 返程</span></div>
     <ul class="day-items"><li>上午独山子大峡谷（可选）</li>
 <li>连霍高速返回乌鲁木齐</li>
 <li>国际大巴扎采购伴手礼</li>
@@ -1063,7 +1091,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
   </div>
 </div>
 
-<div class="footer"></div>
+<div class="footer">Tumu Roadbook v0.1.8 · YAML 驱动的自驾路线图</div>
 </div>
 
 <script>/* @preserve
@@ -1075,7 +1103,7 @@ header .badge { background: #efece4; border: 1px solid #ddd8ce; border-radius: 2
 <script>
 // ═══════════════════ Route Data ═══════════════════
 var r_1 = [[43.826608, 87.617057], [43.972819, 87.615698], [44.106035, 87.703716], [44.138463, 88.015249], [44.103308, 88.691281], [44.293423, 88.739733], [44.404991, 88.822968], [44.79368, 88.845396], [44.894727, 89.034796], [44.960171, 89.070786], [45.199125, 89.378822], [45.585322, 89.538818], [45.977421, 89.511967], [46.678821, 89.618058], [46.751306, 89.555451], [46.914929, 89.588934], [46.994424, 89.525602]];
-var r_2 = [[46.994424, 89.525602], [46.9589, 89.53776], [46.914929, 89.588934], [46.817535, 89.550609], [46.87248, 89.293463], [46.8, 89.270504], [46.768278, 89.207311], [46.501804, 88.949768], [46.469182, 88.811409], [46.417834, 88.697579], [46.437865, 88.665908], [46.441401, 88.596563], [46.520659, 88.526279], [46.535933, 88.474378], [46.537351, 88.440816], [46.513339, 88.423161], [46.51071, 88.385385], [46.570906, 88.182556], [46.570499, 88.040783], [46.610108, 87.866593], [46.683997, 87.751749], [46.729381, 87.717476], [46.885904, 87.721386], [46.925442, 87.755509], [47.048568, 87.66847], [47.090382, 87.587021], [47.171234, 87.705033], [47.190838, 87.675272], [47.226211, 87.704114], [47.332088, 87.575761], [47.425882, 87.571851], [47.436205, 87.4181], [47.522, 87.281947], [47.559365, 87.063937], [47.665627, 86.888898], [47.70391, 86.874006]];
+var r_2 = [[46.994424, 89.525602], [46.9589, 89.53776], [46.914929, 89.588934], [46.817535, 89.550609], [46.87248, 89.293463], [46.8, 89.270504], [46.768278, 89.207311], [46.501804, 88.949768], [46.469182, 88.811409], [46.417834, 88.697579], [46.437865, 88.665908], [46.441401, 88.596563], [46.520659, 88.526279], [46.535933, 88.474378], [46.537351, 88.440816], [46.513339, 88.423161], [46.51071, 88.385385], [46.570906, 88.182556], [46.570499, 88.040783], [46.610108, 87.866593], [46.683997, 87.751749], [46.729381, 87.717476], [46.885904, 87.721386], [46.925442, 87.755509], [47.048568, 87.66847], [47.090382, 87.587021], [47.171234, 87.705033], [47.190838, 87.675272], [47.226211, 87.704114], [47.332088, 87.575761], [47.425882, 87.571851], [47.436205, 87.4181], [47.522, 87.281947], [47.559365, 87.063937], [47.666125, 86.888241], [47.70391, 86.874006]];
 var r_3 = [[47.70391, 86.874006], [47.7077, 86.844212], [47.742725, 86.807902], [47.80283, 86.842691], [47.87957, 86.861499], [47.912049, 86.836506], [48.003584, 86.827129], [48.030956, 86.856397], [48.034751, 86.895826], [48.046616, 86.916264], [48.03714, 86.961057], [48.040648, 86.979919], [48.094061, 86.984811], [48.120583, 87.032747], [48.144742, 87.043567], [48.179276, 87.007846], [48.21776, 87.028166], [48.253088, 87.016769], [48.282324, 87.090276], [48.350509, 87.131325], [48.415942, 87.210844], [48.43852, 87.206248], [48.46015, 87.182079], [48.469861, 87.14715], [48.487995, 87.150899], [48.507355, 87.125842], [48.527394, 87.137865], [48.538433, 87.123198], [48.549068, 87.145464], [48.593966, 87.057701], [48.646908, 87.044723], [48.676829, 87.026105], [48.691252, 87.030159]];
 var r_4 = [[48.691252, 87.030159], [48.686958, 87.026219], [48.676829, 87.026105], [48.662335, 87.031828], [48.655931, 87.040583], [48.646908, 87.044723], [48.632219, 87.048088], [48.628477, 87.046104], [48.617887, 87.053056], [48.614468, 87.04933], [48.608584, 87.057323], [48.593966, 87.057701], [48.593798, 87.065492], [48.588722, 87.078476], [48.583161, 87.077452], [48.57426, 87.094243], [48.569915, 87.098261], [48.555509, 87.125778], [48.553088, 87.139742], [48.549068, 87.145464], [48.546738, 87.14468], [48.542292, 87.126795], [48.538433, 87.123198], [48.530896, 87.128247], [48.527394, 87.137865], [48.507355, 87.125842], [48.50059, 87.142529], [48.494195, 87.142186], [48.485355, 87.146301], [48.487995, 87.150899], [48.483764, 87.148363], [48.475719, 87.152821], [48.473681, 87.147779], [48.469861, 87.14715], [48.473137, 87.149168], [48.470603, 87.147866], [48.465796, 87.153369], [48.465797, 87.157044], [48.462913, 87.160899], [48.462042, 87.170369], [48.459179, 87.175192], [48.46007, 87.182194], [48.456449, 87.181724], [48.455605, 87.183819], [48.457489, 87.184867], [48.453835, 87.186413], [48.44268, 87.199971], [48.443986, 87.199998], [48.437794, 87.204891], [48.43852, 87.206248], [48.431279, 87.206376], [48.424905, 87.211613], [48.420557, 87.209266], [48.42907, 87.210867], [48.425792, 87.217401], [48.428617, 87.229995], [48.430618, 87.235418], [48.437191, 87.241367], [48.440896, 87.250959], [48.436068, 87.246927], [48.44118, 87.253401], [48.443146, 87.264712], [48.446342, 87.270391], [48.444986, 87.270074], [48.447659, 87.278618], [48.443987, 87.28661], [48.444391, 87.295605], [48.442793, 87.288643], [48.44276, 87.295325], [48.441825, 87.285149], [48.438784, 87.298982], [48.440917, 87.314309], [48.439626, 87.312377], [48.446395, 87.330173], [48.456388, 87.325936], [48.460995, 87.327581], [48.475591, 87.351056], [48.479047, 87.350111], [48.481674, 87.34589], [48.48189, 87.325081], [48.483601, 87.322752], [48.491015, 87.324179], [48.511762, 87.343301], [48.521539, 87.342378], [48.518504, 87.360931], [48.52413, 87.382906], [48.52771, 87.38645], [48.529746, 87.39639], [48.529246, 87.404906], [48.526086, 87.402523], [48.525727, 87.406604], [48.53103, 87.423142], [48.53077, 87.435334], [48.53344, 87.447532], [48.529013, 87.456311], [48.534868, 87.480874], [48.54605, 87.478142], [48.550617, 87.482831], [48.566507, 87.474956], [48.566441, 87.469761], [48.568748, 87.468562], [48.574017, 87.456388], [48.573879, 87.443716], [48.575411, 87.440768], [48.574491, 87.436696], [48.57027, 87.432791], [48.569127, 87.427319]];
 var r_5 = [[48.569127, 87.427319], [48.566507, 87.474956], [48.534868, 87.480874], [48.521539, 87.342378], [48.446395, 87.330173], [48.429008, 87.210761], [48.282324, 87.090276], [48.253691, 87.01699], [48.144728, 87.043401], [48.040741, 86.979822], [48.04696, 86.917155], [48.004919, 86.827612], [47.880426, 86.86141], [47.742725, 86.807902], [47.646788, 86.921906], [47.566017, 86.915717], [47.522133, 86.826333], [47.329503, 86.778713], [46.961434, 86.51192], [46.650933, 86.03904], [46.257355, 85.8949], [46.124761, 85.706579], [45.991906, 85.617016], [45.860805, 85.297792], [45.716543, 85.212583], [45.61354, 85.007541], [45.594992, 84.872861]];
@@ -1106,27 +1134,40 @@ var spurRoutes = [
   ['#e74c3c', sr_1],
   ['#3f51b5', sr_2],
 ];
-var cityPosData = [{"name": "乌鲁木齐", "lat": 43.826608, "lng": 87.617057, "color": "#e74c3c", "elevation": 837}, {"name": "富蕴", "lat": 46.994424, "lng": 89.525602, "color": "#f39c12", "elevation": 805}, {"name": "布尔津", "lat": 47.70391, "lng": 86.874006, "color": "#27ae60", "elevation": 470}, {"name": "喀纳斯", "lat": 48.691252, "lng": 87.030159, "color": "#00bcd4", "elevation": 1377}, {"name": "禾木", "lat": 48.569127, "lng": 87.427319, "color": "#9c27b0", "elevation": 1085}, {"name": "克拉玛依", "lat": 45.594992, "lng": 84.872861, "color": "#e91e63", "elevation": 397}, {"name": "赛里木湖", "lat": 44.675287, "lng": 81.229745, "color": "#00acc1", "elevation": 2072}, {"name": "伊宁", "lat": 43.922498, "lng": 81.32653, "color": "#ff9800", "elevation": 644}, {"name": "特克斯", "lat": 43.216669, "lng": 81.83323, "color": "#795548", "elevation": 1211}, {"name": "那拉提", "lat": 43.384658, "lng": 83.496463, "color": "#607d8b", "elevation": 1255}, {"name": "巴音布鲁克", "lat": 43.024688, "lng": 84.150996, "color": "#8bc34a", "elevation": 2448}, {"name": "独山子", "lat": 44.328134, "lng": 84.88427, "color": "#ff5722", "elevation": 759}];
-var dxData = [{"name": "D1", "lat": 43.8466, "lng": 87.617, "color": "#e74c3c", "dist": "", "sub": "乌鲁木齐全天"}, {"name": "D2", "lat": 44.894727, "lng": 89.034796, "color": "#f39c12", "dist": "🚗 480km · 6h", "sub": ""}, {"name": "D3", "lat": 46.570499, "lng": 88.040783, "color": "#27ae60", "dist": "🚗 300km · 4.5h", "sub": ""}, {"name": "D4", "lat": 48.21776, "lng": 87.028166, "color": "#00bcd4", "dist": "🚗 140km · 3h", "sub": ""}, {"name": "D5", "lat": 48.711293, "lng": 87.030019, "color": "#3f51b5", "dist": "🚗 景区游览", "sub": "喀纳斯全天"}, {"name": "D6", "lat": 48.42907, "lng": 87.210867, "color": "#9c27b0", "dist": "🚗 60km · 2h", "sub": ""}, {"name": "D7", "lat": 47.742725, "lng": 86.807902, "color": "#e91e63", "dist": "🚗 450km · 6h", "sub": ""}, {"name": "D8", "lat": 44.549767, "lng": 83.527647, "color": "#00acc1", "dist": "🚗 300km · 3.5h", "sub": ""}, {"name": "D9", "lat": 44.311314, "lng": 80.924379, "color": "#ff9800", "dist": "🚗 150km · 2.5h", "sub": ""}, {"name": "D10", "lat": 43.655557, "lng": 81.920856, "color": "#795548", "dist": "🚗 260km · 5h", "sub": ""}, {"name": "D11", "lat": 43.464659, "lng": 82.294509, "color": "#607d8b", "dist": "🚗 250km · 4h", "sub": ""}, {"name": "D12", "lat": 43.205264, "lng": 84.349036, "color": "#8bc34a", "dist": "🚗 90km · 2h", "sub": ""}, {"name": "D13", "lat": 43.511619, "lng": 84.469748, "color": "#ff5722", "dist": "🚗 300km · 5h", "sub": ""}, {"name": "D14", "lat": 44.196216, "lng": 86.502347, "color": "#9e9e9e", "dist": "🚗 250km · 3h", "sub": ""}];
-var majorSpots = [[43.886, 88.131, "#8b6a4a", "天山天池", 0, -20], [46.750483, 89.218837, "#8b6a4a", "可可托海", 0, -20], [48.323, 86.835, "#8b6a4a", "五彩滩", 0, -20], [48.697, 87.017, "#8b6a4a", "观鱼台", 0, -20], [48.668, 87.045, "#8b6a4a", "月亮湾", 0, 18], [48.572, 87.43, "#8b6a4a", "禾木观景台", 0, -20], [46.104, 85.718, "#8b6a4a", "乌尔禾魔鬼城", 0, -20], [44.608256, 81.180576, "#8b6a4a", "赛里木湖", 0, -20], [44.47032, 81.140324, "#8b6a4a", "果子沟大桥", 0, -20], [44.06, 80.878, "#8b6a4a", "霍城薰衣草", 0, -20], [43.424991, 81.058207, "#8b6a4a", "伊昭公路", 0, -20], [43.09159, 82.135121, "#8b6a4a", "喀拉峻草原", 0, 18], [43.08, 82.119, "#8b6a4a", "阔克苏大峡谷", 0, -20], [43.36, 83.76, "#8b6a4a", "那拉提空中草原", 0, 18], [42.764028, 84.423221, "#8b6a4a", "九曲十八弯", 0, -20], [43.65, 84.357, "#8b6a4a", "独库公路纪念碑", 0, -20], [43.695, 84.433, "#8b6a4a", "乔尔玛烈士陵园", 0, 18]];
-var spots = [[48.658248, 87.037659, "神仙湾"], [43.909509, 81.329979, "喀赞其民俗街"], [43.134, 81.132, "昭苏天马"], [43.779119, 87.61532, "国际大巴扎"]];
+var cityPosData = [{"name": "乌鲁木齐", "lat": 43.826608, "lng": 87.617057, "color": "#e74c3c", "elevation": 836}, {"name": "富蕴", "lat": 46.994424, "lng": 89.525602, "color": "#f39c12", "elevation": 806}, {"name": "布尔津", "lat": 47.70391, "lng": 86.874006, "color": "#27ae60", "elevation": 471}, {"name": "喀纳斯", "lat": 48.691252, "lng": 87.030159, "color": "#00bcd4", "elevation": 1377}, {"name": "禾木", "lat": 48.569127, "lng": 87.427319, "color": "#9c27b0", "elevation": 1085}, {"name": "克拉玛依", "lat": 45.594992, "lng": 84.872861, "color": "#e91e63", "elevation": 397}, {"name": "赛里木湖", "lat": 44.675287, "lng": 81.229745, "color": "#00acc1", "elevation": 2072}, {"name": "伊宁", "lat": 43.922498, "lng": 81.32653, "color": "#ff9800", "elevation": 645}, {"name": "特克斯", "lat": 43.216669, "lng": 81.83323, "color": "#795548", "elevation": 1210}, {"name": "那拉提", "lat": 43.384658, "lng": 83.496463, "color": "#607d8b", "elevation": 1254}, {"name": "巴音布鲁克", "lat": 43.024688, "lng": 84.150996, "color": "#8bc34a", "elevation": 2448}, {"name": "独山子", "lat": 44.328134, "lng": 84.88427, "color": "#ff5722", "elevation": 758}];
+var dxData = [{"name": "D1", "lat": 43.8466, "lng": 87.617, "color": "#e74c3c", "dist": "", "sub": "乌鲁木齐全天"}, {"name": "D2", "lat": 44.894727, "lng": 89.034796, "color": "#f39c12", "dist": "480km", "sub": ""}, {"name": "D3", "lat": 46.570499, "lng": 88.040783, "color": "#27ae60", "dist": "300km", "sub": ""}, {"name": "D4", "lat": 48.21776, "lng": 87.028166, "color": "#00bcd4", "dist": "140km", "sub": ""}, {"name": "D5", "lat": 48.711293, "lng": 87.030019, "color": "#3f51b5", "dist": "景区游览", "sub": "喀纳斯全天"}, {"name": "D6", "lat": 48.42907, "lng": 87.210867, "color": "#9c27b0", "dist": "60km", "sub": ""}, {"name": "D7", "lat": 47.742725, "lng": 86.807902, "color": "#e91e63", "dist": "450km", "sub": ""}, {"name": "D8", "lat": 44.549767, "lng": 83.527647, "color": "#00acc1", "dist": "300km", "sub": ""}, {"name": "D9", "lat": 44.311314, "lng": 80.924379, "color": "#ff9800", "dist": "150km", "sub": ""}, {"name": "D10", "lat": 43.655557, "lng": 81.920856, "color": "#795548", "dist": "260km", "sub": ""}, {"name": "D11", "lat": 43.464659, "lng": 82.294509, "color": "#607d8b", "dist": "250km", "sub": ""}, {"name": "D12", "lat": 43.205264, "lng": 84.349036, "color": "#8bc34a", "dist": "90km", "sub": ""}, {"name": "D13", "lat": 43.511619, "lng": 84.469748, "color": "#ff5722", "dist": "300km", "sub": ""}, {"name": "D14", "lat": 44.196216, "lng": 86.502347, "color": "#9e9e9e", "dist": "250km", "sub": ""}];
+var majorSpots = [[43.886, 88.131, "#8b6a4a", "天山天池", 0, -20], [46.750483, 89.218837, "#8b6a4a", "可可托海", 0, -20], [47.839136, 86.67173, "#8b6a4a", "五彩滩", 0, -20], [48.697, 87.017, "#8b6a4a", "观鱼台", 0, -20], [48.668, 87.045, "#8b6a4a", "月亮湾", 0, 18], [48.572, 87.43, "#8b6a4a", "禾木观景台", 0, -20], [46.104, 85.718, "#8b6a4a", "乌尔禾魔鬼城", 0, -20], [44.608256, 81.180576, "#8b6a4a", "赛里木湖", 0, -20], [44.470317, 81.140492, "#8b6a4a", "果子沟大桥", 0, -20], [44.06, 80.878, "#8b6a4a", "霍城薰衣草", 0, -20], [43.424991, 81.058207, "#8b6a4a", "伊昭公路", 0, -20], [43.09159, 82.135121, "#8b6a4a", "喀拉峻草原", 0, 18], [43.08, 82.119, "#8b6a4a", "阔克苏大峡谷", 0, -20], [43.36, 83.76, "#8b6a4a", "那拉提空中草原", 0, 18], [42.764028, 84.423221, "#8b6a4a", "九曲十八弯", 0, -20], [43.65, 84.357, "#8b6a4a", "独库公路纪念碑", 0, -20], [43.695, 84.433, "#8b6a4a", "乔尔玛烈士陵园", 0, 18]];
+var spots = [[48.658058, 87.037615, "神仙湾"], [43.909509, 81.329979, "喀赞其民俗街"], [43.134, 81.132, "昭苏天马"], [43.779119, 87.61532, "国际大巴扎"]];
 // ═══════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════
 // map.js — 线段碰撞检测（路线用线段而非散点）
 // ═══════════════════════════════════════════════════
 
-var map = L.map('map', { center: [45.3554, 85.2702], zoom: 7, zoomControl: true, scrollWheelZoom: true, attributionControl: false });
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 20 }).addTo(map);
-
-var standardTile = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 20 });
-var terrainTile = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 17 });
+var map = L.map('map', { center: [45.3554, 85.2702], zoom: 7, zoomControl: true, scrollWheelZoom: true, attributionControl: true });
+window.routeMap = map;
+var tileAttribution = '&copy; <a href="https://www.esri.com/">Esri</a>';
+var standardTile = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', { attribution: tileAttribution, maxZoom: 20, className: 'tile-standard' });
+var standardTransport = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, opacity: 0.36, className: 'tile-transport' });
+var terrainTile = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', { attribution: tileAttribution, maxZoom: 17, className: 'tile-terrain' });
 standardTile.addTo(map);
+standardTransport.addTo(map);
 document.querySelectorAll('.ls-btn').forEach(function(btn) {
   btn.addEventListener('click', function() {
-    document.querySelectorAll('.ls-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.ls-btn').forEach(function(b) {
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed', 'false');
+    });
     this.classList.add('active');
-    if (this.dataset.layer === 'standard') { map.removeLayer(terrainTile); standardTile.addTo(map); }
-    else { map.removeLayer(standardTile); terrainTile.addTo(map); }
+    this.setAttribute('aria-pressed', 'true');
+    if (this.dataset.layer === 'standard') {
+      map.removeLayer(terrainTile);
+      standardTile.addTo(map);
+      standardTransport.addTo(map);
+    } else {
+      map.removeLayer(standardTile);
+      map.removeLayer(standardTransport);
+      terrainTile.addTo(map);
+    }
   });
 });
 
@@ -1187,11 +1228,26 @@ var poiMajor = L.layerGroup();
 var poiMinor = L.layerGroup();
 for (var i = 0; i < majorSpots.length; i++) {
   var s = majorSpots[i];
-  poiMajor.addLayer(L.marker([s[0], s[1]], { icon: L.divIcon({ className: '', html: '<div style="display:flex;align-items:center;gap:3px;"><div style="width:6px;height:6px;background:'+s[2]+';border-radius:50%;flex-shrink:0;"></div><span style="font-size:12px;font-weight:700;color:'+s[2]+';white-space:nowrap;">'+s[3]+'</span></div>', iconSize: [40,28], iconAnchor: [s[4]+20, s[5]+14] }) }));
+  var dir = s[5] < 0 ? 'top' : (s[5] > 0 ? 'bottom' : (s[4] < 0 ? 'left' : 'right'));
+  var dot = L.circleMarker([s[0], s[1]], { radius: 4, color: s[2], weight: 2, fillColor: '#fff', fillOpacity: 1 });
+  dot.bindTooltip(s[3], {
+    permanent: true,
+    direction: dir,
+    className: 'poi-tooltip',
+    opacity: 1
+  });
+  poiMajor.addLayer(dot);
 }
 for (var i = 0; i < spots.length; i++) {
   var s = spots[i];
-  poiMinor.addLayer(L.marker([s[0], s[1]], { icon: L.divIcon({ className: '', html: '<div style="display:flex;align-items:center;gap:3px;"><div style="width:6px;height:6px;background:#3d7a4a;border-radius:50%;flex-shrink:0;"></div><span style="font-size:11px;font-weight:700;color:#3d7a4a;white-space:nowrap;">'+s[2]+'</span></div>', iconSize: [80,18], iconAnchor: [4,9] }) }));
+  var dot = L.circleMarker([s[0], s[1]], { radius: 3, color: '#3d7a4a', weight: 2, fillColor: '#fff', fillOpacity: 1 });
+  dot.bindTooltip(s[2], {
+    permanent: true,
+    direction: 'right',
+    className: 'poi-tooltip poi-tooltip-minor',
+    opacity: 1
+  });
+  poiMinor.addLayer(dot);
 }
 
 // ── 配置 ──
@@ -1319,6 +1375,25 @@ dxData.forEach(function(d){ab.extend([d.lat,d.lng]);});
 majorSpots.forEach(function(s){ab.extend([s[0],s[1]]);});
 spots.forEach(function(s){ab.extend([s[0],s[1]]);});
 map.fitBounds(ab,{padding:[50,50]});
+var overviewBounds = map.getBounds();
+var focusCfg = null;
+var focusActive = false;
+var focusBtn = document.getElementById('focus-btn');
+if (focusCfg && focusCfg.center && focusCfg.zoom) {
+  focusBtn.style.display = 'block';
+  focusBtn.textContent = focusCfg.label || '聚焦路线';
+  focusBtn.addEventListener('click', function() {
+    focusActive = !focusActive;
+    focusBtn.setAttribute('aria-pressed', focusActive ? 'true' : 'false');
+    if (focusActive) {
+      focusBtn.textContent = '查看全程';
+      map.flyTo(focusCfg.center, focusCfg.zoom, {duration: 0.8});
+    } else {
+      focusBtn.textContent = focusCfg.label || '聚焦路线';
+      map.fitBounds(overviewBounds, {padding: [50, 50]});
+    }
+  });
+}
 
 // ── Zoom 处理器 ──
 function u() {
@@ -1401,17 +1476,33 @@ function toggleMapFullscreen() {
   var btn = document.getElementById('fullscreen-btn');
   btn.textContent = el.classList.contains('fullscreen') ? '✕' : '⛶';
   btn.title = el.classList.contains('fullscreen') ? '退出全屏' : '全屏浏览';
+  btn.setAttribute('aria-label', btn.title);
   // 延迟让 CSS transition 完成后刷新地图
   setTimeout(function(){ map.invalidateSize(); }, 350);
 }
+document.getElementById('fullscreen-btn').addEventListener('click', toggleMapFullscreen);
+
+// ── 微观日志展开／收起 ──
+document.querySelectorAll('.timeline-toggle').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var panel = document.getElementById(this.getAttribute('aria-controls'));
+    var expanded = this.getAttribute('aria-expanded') === 'true';
+    this.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    this.querySelector('.timeline-chevron').textContent = expanded ? '▼' : '▶';
+    panel.hidden = expanded;
+  });
+});
+
 // ESC 退出全屏
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
     var el = document.getElementById('map-section');
     if (el.classList.contains('fullscreen')) {
       el.classList.remove('fullscreen');
-      document.getElementById('fullscreen-btn').textContent = '⛶';
-      document.getElementById('fullscreen-btn').title = '全屏浏览';
+      var btn = document.getElementById('fullscreen-btn');
+      btn.textContent = '⛶';
+      btn.title = '全屏浏览';
+      btn.setAttribute('aria-label', '全屏浏览地图');
       setTimeout(function(){ map.invalidateSize(); }, 350);
     }
   }

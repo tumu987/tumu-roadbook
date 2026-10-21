@@ -22,6 +22,9 @@ trip:
   subtitle: 浊漳河谷 · 长治 · 高平 · 皇城
   dates: "6月8日 — 6月14日"
   basemap: light          # light / dark / terrain
+  drivers: 2              # 1 = 单主驾，2 = 双主驾
+  coordinate_verification: strict
+  timeline_mode: merged   # 每日详情直接使用 timeline
 
 days:
   - day: 1
@@ -38,9 +41,12 @@ days:
       - "🏨 宿平顺/河谷区"
     pois:
       - name: 龙门寺
-        coord: [36.26, 113.60]
+        coord: [36.390227, 113.623042]
         rank: major          # major / minor
         dynasty: 五代
+        coord_source: osm
+        osm_id: way/1252171732
+        verified_at: "2026-10-21"
       - name: 淳化寺
         coord: [36.25, 113.58]
         rank: major
@@ -154,15 +160,25 @@ CSS 中使用的颜色、字号、间距通过 Python 字符串模板注入，�
 ## 6. 目录结构
 
 ```
-~/trip-planner/
+tumu-roadbook/
+├── VERSION                  # 当前版本
+├── CHANGELOG.md             # 版本变更记录
+├── README.md                # 安装与使用说明
+├── requirements.txt         # Python 依赖
 ├── generate.py              # 主生成脚本
 ├── templates/
-│   └── base.html            # Jinja2 模板（可选 f-string 内联）
+│   ├── map.html             # 页面结构
+│   ├── map.css              # 页面样式
+│   └── map.js               # 地图与标签逻辑
 ├── trips/
 │   ├── jindongnan.yaml      # 晋东南数据
 │   └── ...                   # 未来行程
-├── output/
-│   └── jindongnan.html      # 生成产物
+├── docs/
+│   ├── index.html            # 路线册索引
+│   └── *.html                # 已发布产物
+├── tests/                    # 校验与算路回归测试
+├── output/                   # 本地临时产物（忽略提交）
+├── resolved/                 # 本地解析缓存（忽略提交）
 └── PROJECT.md               # 本文件
 ```
 
